@@ -7,7 +7,7 @@ function fatal_error () {
 	exit 1
 }
 
-MASTER=https://api-kops1-k8s-local-u6p60a-1500900378.us-west-1.elb.amazonaws.com
+MASTER=https://api-kops1-k8s-local-u6p60a-1741966285.us-west-1.elb.amazonaws.com
 INPUT_BUCKET=variant-spark-k-storage20180615052509001100000001
 
 [[ $(type -P "spark-submit") ]] || fatal_error  "\`spark-submit\` cannot be found. Please make sure it's on your PATH."
@@ -23,8 +23,8 @@ spark-submit \
     --conf spark.kubernetes.container.image=jamesrcounts/variantspark:001 \
     --jars http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar,http://central.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar,http://central.maven.org/maven2/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar \
     local:///opt/spark/jars/variant-spark_2.11-0.2.0-SNAPSHOT-all.jar importance \
-        -if /opt/ml/chr22_1000.vcf \
-        -ff /opt/ml/chr22-labels.csv \
+        -if s3a://${INPUT_BUCKET}/input/chr22_1000.vcf \
+        -ff s3a://${INPUT_BUCKET}/input/chr22-labels.csv \
         -fc 22_16051249 \
         -v \
         -rn 500 \

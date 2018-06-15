@@ -1,6 +1,5 @@
 FROM jamesrcounts/spark:2.3.0 AS base
 WORKDIR /opt/ml
-COPY ./data ./
 
 FROM maven AS build-env
 
