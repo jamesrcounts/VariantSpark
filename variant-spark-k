@@ -20,7 +20,7 @@ spark-submit \
     --name VariantSpark \
     --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
     --conf spark.executor.instances=6 \
-    --conf spark.kubernetes.container.image=jamesrcounts/variantspark:001 \
+    --conf spark.kubernetes.container.image=jamesrcounts/variantspark:002 \
     --jars http://central.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar,http://central.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar,http://central.maven.org/maven2/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar \
     local:///opt/spark/jars/variant-spark_2.11-0.2.0-SNAPSHOT-all.jar importance \
         -if s3a://${INPUT_BUCKET}/input/chr22_1000.vcf \
