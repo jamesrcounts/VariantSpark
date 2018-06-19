@@ -7,15 +7,18 @@ function fatal_error () {
 	exit 1
 }
 
-MASTER=https://api-kops1-k8s-local-u6p60a-1741966285.us-west-1.elb.amazonaws.com
-INPUT_BUCKET=variant-spark-k-storage20180615052509001100000001
+source ../variantspark-k/infrastructure/tf/out/env
+
+MASTER=http://localhost:8001
+#
+#INPUT_BUCKET=variant-spark-k-storage20180615052509001100000001
 
 [[ $(type -P "spark-submit") ]] || fatal_error  "\`spark-submit\` cannot be found. Please make sure it's on your PATH."
 
 spark-submit \
     --class au.csiro.variantspark.cli.VariantSparkApp \
     --driver-class-path ./conf \
-    --master k8s://${MASTER}:443 \
+    --master k8s://${MASTER} \
     --deploy-mode cluster \
     --name VariantSpark \
     --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
