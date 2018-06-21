@@ -1,3 +1,4 @@
+# A docker file that works with Spark on Kubernetes
 FROM jamesrcounts/spark:2.3.0 AS base
 WORKDIR /opt/ml
 
