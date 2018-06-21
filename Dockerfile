@@ -5,11 +5,11 @@ FROM maven AS build-env
 
 WORKDIR /opt/input
 
-COPY pom.xml ./
+COPY ../pom.xml ./
 RUN mvn dependency:resolve
 
 # Copy rest of application
-COPY . ./
+COPY .. ./
 RUN mvn clean install
 
 FROM base AS final
