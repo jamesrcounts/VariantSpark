@@ -1,0 +1,61 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: notebook-storage
+spec:
+  storageClassName: gp2
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: notebook-storage
+  labels:
+    type: local
+spec:
+  storageClassName: gp2
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: notebook-client
+  labels:
+    app: notebook-client
+spec:
+  volumes:
+    - name: notebook-storage
+      persistentVolumeClaim:
+       claimName: notebook-storage
+  containers:
+    - name: notebook
+      image: jamesrcounts/variantspark-notebook
+      ports:
+        - containerPort: 8888
+          name: "notebook-server"
+      volumeMounts:
+        - mountPath: "/home/jovyan/work"
+          name: notebook-storage
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: notebook-client
+spec:
+  selector:
+    app: notebook-client
+  ports:
+  - protocol: TCP
+    port: 8888
+    targetPort: 8888
+  type: LoadBalancer
+
