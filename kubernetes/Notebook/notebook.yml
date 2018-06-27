@@ -2,6 +2,8 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: notebook-storage
+  annotations:
+      pv.beta.kubernetes.io/gid: "1234"
 spec:
   storageClassName: gp2
   accessModes:
@@ -14,6 +16,8 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   name: notebook-storage
+  annotations:
+      pv.beta.kubernetes.io/gid: "1234"
   labels:
     type: local
 spec:
@@ -32,6 +36,9 @@ metadata:
   labels:
     app: notebook-client
 spec:
+  serviceAccountName: spark
+  securityContext:
+    fsGroup: 100
   volumes:
     - name: notebook-storage
       persistentVolumeClaim:
