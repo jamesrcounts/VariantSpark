@@ -38,7 +38,7 @@ metadata:
 spec:
   serviceAccountName: spark
   securityContext:
-    fsGroup: 100 
+    fsGroup: 100
   volumes:
     - name: notebook-storage
       persistentVolumeClaim:
