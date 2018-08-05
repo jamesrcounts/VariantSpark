@@ -4,12 +4,12 @@ Variant Spark
 [![Travis-Build](https://travis-ci.org/aehrc/VariantSpark.svg?branch=master)](https://travis-ci.org/aehrc/VariantSpark#)
 [![Documentation Status](https://readthedocs.org/projects/variantspark/badge/?version=latest)](http://variantspark.readthedocs.io/en/latest/?badge=latest)
 
-_variant-spark_ is a scalable toolkit for genome-wide association studies optimized for GWAS like datasets. 
+_variant-spark_ is a scalable toolkit for genome-wide association studies optimized for GWAS like datasets.
 
 Machine learning methods and, in particular, random forests (RFs) are a promising alternative to standard single SNP analyses in genome-wide association studies (GWAS). RFs provide variable importance measures to rank SNPs according to their predictive power.
 Although there are number of existing random forest implementations available, some even parallel or distributed such as: Random Jungle, ranger or SparkML, most of them are not optimized to deal with GWAS datasets, which usually come with thousands of samples and millions of variables.
 
-_variant-spark_ currently provides the basic functionality of building random forest model and estimating variable importance with mean decrease gini method and can operate on VCF and CSV files. Future extensions will include support of other importance measures, variable selection methods and data formats. 
+_variant-spark_ currently provides the basic functionality of building random forest model and estimating variable importance with mean decrease gini method and can operate on VCF and CSV files. Future extensions will include support of other importance measures, variable selection methods and data formats.
 
 _variant-spark_ utilizes a novel approach of building random forest from data in transposed representation, which allows it to efficiently deal with even extremely wide GWAS datasets. Moreover, since the most common genomics variant calls VCF and uses the transposed representation, variant-spark can work directly with the VCF data, without the costly pre-processing required by other tools.
 
@@ -39,59 +39,55 @@ _variant-spark_ requires java jdk 1.8+ and maven 3+
 
 In order to build the binaries use:
 
-	mvn clean install
-	
-For python _variant-spark_ requires python 2.7 with pip. 
+	- `mvn clean install`
+
+For python _variant-spark_ requires python 2.7 with pip.
 The other packages required for development are listed in `dev/dev-requirements.txt` and can be installed with:
 
-    pip install -r dev/dev-requirements.txt
-    
-or with: 
-    
-    ./dev/py-setup.sh
+  - `pip install -r dev/dev-requirements.txt`
 
-    
+or with:
+
+  -  `./dev/py-setup.sh`
+
+
 The complete built including all check can be run with:
 
-    ./dev/build.sh
-	
+  -  `./dev/build.sh`
+
 ### Running
 
 variant-spark requires an existing spark 2.1+ installation (either a local one or a cluster one).
 
 To run variant-spark use:
 
-	./variant-spark [(--spark|--local) <spark-options>* --] [<command>] <command-options>*
+	- `./variant-spark [(--spark|--local) <spark-options>* --] [<command>] <command-options>*`
 
 In order to obtain the list of the available commands use:
 
-	./variant-spark -h
-	
+	- `./variant-spark -h`
+
 In order to obtain help for a specific command (for example `importance`) use:
 
-	./variant-spark importance -h
+	- `./variant-spark importance -h`
 
 You can use `--spark` marker before the command to pass `spark-submit` options to variant-spark. The list of spark options needs to be terminated with `--`, e.g:
 
-	./variant-spark --spark --master yarn-client --num-executors 32 -- importance .... 
-	
+	- `./variant-spark --spark --master yarn-client --num-executors 32 -- importance ....`
+
 Please, note that `--spark` needs to be the first argument of `variant-spark`
 
 You can also run variant-spark in the `--local` mode. In this mode variant-spark will ignore any Hadoop or Spark configuration files and run in the local mode for both Hadoop and Spark. In particular in this mode all file paths are interpreted as local file system paths. Also any parameters passed after `--local` and before `--` are ignored. For example:
 
-	./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
+	 - `./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro`
 
-Note: 
+Note: The difference between running in `--local` mode and in `--spark` with `local` master is that in the latter case Spark uses the hadoop filesystem configuration and the input files need to be copied to this filesystem (e.g. HDFS). Also the output will be written to the location determined by the hadoop filesystem settings. In particular paths without schema e.g. 'output.csv' will be resolved with the hadoop default filesystem (usually HDFS). To change this behavior you can set the default filesystem in the command line using `spark.hadoop.fs.default.name` option. For example to use local filesystem as the default use:
 
-The difference between running in `--local` mode and in `--spark` with `local` master is that in the latter case Spark uses the hadoop filesystem configuration and the input files need to be copied to this filesystem (e.g. HDFS) 
-Also the output will be written to the location determined by the hadoop filesystem settings. In particular paths without schema e.g. 'output.csv' will be resolved with the hadoop default filesystem (usually HDFS)
-To change this behavior you can set the default filesystem in the command line using `spark.hadoop.fs.default.name` option. For example to use local filesystem as the default use:
-
-    veriant-spaek --spark ... --conf "spark.hadoop.fs.default.name=file:///" ... -- importance  ... -of output.csv
+     - `variant-spark --spark ... --conf "spark.hadoop.fs.default.name=file:///" ... -- importance  ... -of output.csv`
 
 You can also use the full URI with the schema to address any filesystem for both input and output files e.g.:
 
-    veriant-spaek --spark ... --conf "spark.hadoop.fs.default.name=file:///" ... -- importance  -if hdfs:///user/data/input.csv ... -of output.csv
+    - `variant-spark --spark ... --conf "spark.hadoop.fs.default.name=file:///" ... -- importance  -if hdfs:///user/data/input.csv ... -of output.csv`
 
 
 ### Running examples
@@ -102,32 +98,102 @@ There are multiple methods for running variant-spark examples
 
 variant-spark comes with a few example scripts in the `scripts` directory that demonstrate how to run its commands on sample data .
 
-There is a few small data sets in the `data` directory suitable for running on a single machine. For example
+There are a few small data sets in the `data` directory suitable for running on a single machine. For example the command below runs variable importance command on a small sample of the chromosome 22 .vcf file (from 1000 Genomes Project)
 
-	./scripts/local_run-importance-ch22.sh 
-	
-runs variable importance command on a small sample of the chromosome 22 vcf file (from 1000 Genomes Project)
-
+	 - `./scripts/local_run-importance-ch22.sh`
 
 The full size examples require a cluster environment (the scripts are configured to work with Spark on YARN).
 
-The data required for the examples can be obtained from: [https://bitbucket.csiro.au/projects/PBDAV/repos/variant-spark-data](https://bitbucket.csiro.au/projects/PBDAV/repos/variant-spark-data)
-
-This repository uses the git Large File Support extension, which needs to be installed first (see: [https://git-lfs.github.com/](https://git-lfs.github.com/))
+The data required for the examples can be obtained from: [https://bitbucket.csiro.au/projects/PBDAV/repos/variant-spark-data](https://bitbucket.csiro.au/projects/PBDAV/repos/variant-spark-data). This repository uses the git Large File Support extension, which needs to be installed first (see: [https://git-lfs.github.com/](https://git-lfs.github.com/))
 
 Clone the `variant-spark-data` repository and then to install the test data into your hadoop filesystem use:
 
-	./install-data
-	
-By default the sample data will installed into the `variant-spark-data\input` sub directory of your HDFS home directory.
+	- `./install-data`
 
-You can choose a different location by setting the `VS_DATA_DIR` environment variable.
+By default the sample data will installed into the `variant-spark-data\input` sub directory of your HDFS home directory. You can choose a different location by setting the `VS_DATA_DIR` environment variable. After the test data has been successfully copied to HDFS you can run examples scripts, e.g.:
 
-After the test data has been successfully copied to HDFS you can run examples scripts, e.g.:
+	- `./scripts/yarn_run-importance-ch22.sh`
 
-	./scripts/yarn_run-importance-ch22.sh
+Note: if you installed the data to a non default location the `VS_DATA_DIR` needs to be set accordingly when running the examples
 
-Note: if you installed the data to a non default location the `VS_DATA_DIR` needs to be set accordingly when running the examples	
+-----
+
+```
+Example and Parameters
+$ variant-spark importance -if ../data/chr22_1000.vcf -ff ../data/chr22-labels.csv -fc 22_16050408 -v -rn 500 -rbs 20 -ro -sr 13
+
+Example running locally
+$ ./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
+```
+
+```
+Options: --spark... --conf, 	(Optional) Use when setting non-default Spark configuration (i.e. number and size of executors...)
+		 --importance,		  Run the variableImportance analysis				
+		 --locally,			 (Optional) Use when running on a local Spark cluster
+		 -if,                   Path to input variant file (.vcf) and file name - formats .vcf, .vcf.bz, .vcf.bz2, parquet
+         -ff,                   Path to input label file (.csv) and file name - formats .csv, .txt, .csv.bz2
+         -fc,                   Column label name of the label file
+		 -it parquet,		   If using parquet file format											
+         -v,              	  ???
+         -rn,           		Number of trees (use 100-500 for testing and xxx to yyy for production)
+         -rbs,            	  Batch size (use 20-50 for testing and xxx to yyy for production)
+		 -rmtf,				 (Optional) default of xxx, for testing set to 0.1 - mtry
+         -ro,                   (Optional) Calculate OOB value, if not configured, is disabled and returns NaN
+		 -sr,				   ???
+		 -on,				   (Optional) default of xxx, for testing set to 1000
+		 -of,				   (Optional) path to output file
+         -h,  --help            Help message.
+```
+
+#### Detailed Parameter Example
+
+The detailed parameter output directly below this sentence is produced when running the command in the section below it.  
+Detailed Command:
+
+```
+au.csiro.variantspark.cli.ImportanceCmd@60859f5a
+
+	[inputFile=s3a://variant-spark/datasets/synthetic/data_s5000_v2500000_r13.parquet,
+	inputType=parquet,
+	varOrdinalLevels=3,
+	featuresFile=s3a://variant-spark/datasets/synthetic/labels_s5000_v2500000_r13_f0.125.csv,
+	featureColumn=resp,
+	outputFile=<null>;,
+	nVariables=20,
+	includeData=false,
+	modelFile=&lt;null&gt;,
+	nTrees=100,
+	rfMTry=-1,
+	rfMTryFraction=NaN,
+	rfEstimateOob=true,
+	rfRandomizeEqual=false,
+	rfSubsampleFraction=NaN,
+	rfSampleNoReplacement=false,
+	rfBatchSize=28,
+	randomSeed=3423975071878010588,
+	sparkPar=0,
+	beVerbose=true,
+	beSilent=false,
+	conf=org.apache.spark.SparkConf@8f2098e,
+	spark=org.apache.spark.sql.SparkSession@6c6366cf,
+	sc=org.apache.spark.SparkContext@55a88417,
+	sqlContext=<null>;]
+```
+---
+Actual Command that produces the command shown above:
+
+```
+	au.csiro.variantspark.cli.VariantSparkApp importance
+	-if s3a://variant-spark/datasets/synthetic/data_s5000_v2500000_r13.parquet
+	-ff s3a://variant-spark/datasets/synthetic/labels_s5000_v2500000_r13_f0.125.csv
+	-fc resp
+	-it parquet
+	-v
+	-rn 100
+	-rbs 28
+	-ro
+```
+---
 
 #### Databricks notebook examples
 
@@ -142,5 +208,3 @@ To use an example:
 4. **Start** a cluster (be sure to select the version of Spark and Scala specified in the notebook). Wait up to 5 minutes for the cluster to be ready.
 5. **Attach** the notebook to the cluster
 6. **Run** the sample notebook
-
-
