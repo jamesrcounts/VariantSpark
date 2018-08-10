@@ -1,7 +1,7 @@
 resource "aws_security_group" "variantspark_node" {
   name        = "variantspark_eks_node"
   description = "Security group for all nodes in the cluster"
-  vpc_id      = "${module.vpc.vpc_id}"
+  vpc_id      = "${var.vpc_id}"
 
   egress {
     from_port   = 0

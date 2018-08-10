@@ -36,3 +36,11 @@ module "vpc" {
     "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
+
+module "eks" {
+  source         = "modules/eks"
+  cluster_name   = "${var.cluster_name}"
+  public_subnets = "${module.vpc.public_subnets}"
+  spark_user_arn = ""
+  vpc_id         = "${module.vpc.vpc_id}"
+}
