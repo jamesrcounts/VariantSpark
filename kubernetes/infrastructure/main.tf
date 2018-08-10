@@ -41,6 +41,20 @@ module "eks" {
   source         = "modules/eks"
   cluster_name   = "${var.cluster_name}"
   public_subnets = "${module.vpc.public_subnets}"
-  spark_user_arn = ""
+  spark_user_arn = "${aws_iam_user.spark.arn}"
   vpc_id         = "${module.vpc.vpc_id}"
+}
+
+resource "local_file" "kubeconfig" {
+  filename = "out/config"
+  content  = "${module.eks.kubeconfig}"
+
+  provisioner "local-exec" {
+    command = "cp out/config ~/.kube/config"
+  }
+}
+
+resource "local_file" "setup_yaml" {
+  filename = "out/setup.yaml"
+  content  = "${module.eks.kubernetes_setup}"
 }

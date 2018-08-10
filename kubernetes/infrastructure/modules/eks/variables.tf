@@ -10,3 +10,7 @@ variable "worker_size" {
 
 variable "spark_user_arn" {}
 variable "vpc_id" {}
+
+variable "caller_profile" {
+  default = "default"
+}
