@@ -74,3 +74,4 @@ spark-warehouse
 #
 # example.tfvars
 
+/kubernetes/infrastructure/out
