@@ -5,7 +5,7 @@ variable "public_subnets" {
 }
 
 variable "worker_size" {
-  default = "m4.large"
+  default = "r4.4xlarge"
 }
 
 variable "spark_user_arn" {}
