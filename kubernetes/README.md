@@ -1,17 +1,18 @@
 ## VariantSpark-EKS (AWS Kubernetes) Setup Process
 
 Using the provided Terraform scripts to set up a Kubernetes VariantSpark cluster on AWS provides these benefits:
-- Quick cluster set up and tear down - for job runs and load testing
-- Consistant cluster configuration - for reproducibility of research
-- Parameterized scripts - for flexibility in cluster sizing and vendor selection
-- Cost savings - more efficient use of cloud compute resources (than VMs)
+- **Quick cluster set up and tear down** - for job runs and load testing
+- **Consistant cluster configuration** - for reproducibility of research
+- **Parameterized scripts** - for flexibility in cluster sizing and vendor selection
+- **Cost savings** - more efficient use of cloud compute resources (than VMs)
 
-There are three core aspects to use EKS w/VariantSpark. These are as follows:  - One-time setup steps - client machines require a number of libraries, plan for up to 2 hours for this initial setup
-- Per job configuration steps - sizing your cluster and configurating parameters, you may choose to run with Terraform script default cluster sizes (i.e. EC2 type, quantity, etc...) or you may update as needed
-- Job run steps - launching VariantSpark on AWS EKS requires only two steps, we provide a connected Jupyter client if you wish to use this to launch jobs
+There are three core aspects to use EKS w/VariantSpark. These are as follows:  
+- **One-time setup steps** - client machines require a number of libraries, plan for up to 2 hours for this initial setup
+- **Per job configuration steps** - sizing your cluster and configurating parameters, you may choose to run with Terraform script default cluster sizes (i.e. EC2 type, quantity, etc...) or you may update as needed
+- **Job run execution steps** - launching VariantSpark on AWS EKS requires only two steps, we provide a connected Jupyter client if you wish to use this to launch jobs
  --- 
 
------ ONE TIME INSTALLATIONS ----
+----- ONE TIME INSTALLATION STEPS ----
 1. General Prereqs
    
     a. **AWS account & tools** - create / configure
@@ -68,24 +69,23 @@ There are three core aspects to use EKS w/VariantSpark. These are as follows:  -
 
 ## To Setup a VariantSpark-k cluster
 
-We are running in `us-west-2` (Oregon).  AWS EKS is only available in `us-west-2` or `us-east-1` currently.   
-NOTE: When we tested on `us-east-1`, we got 'out of resources' errors messages from EKS.
+We are running in `us-west-2` (Oregon).  AWS EKS is only available in `us-west-2` or `us-east-1` currently.  TIP: When we tested on `us-east-1`, we got 'out of resources' errors messages from EKS.
 
 ### 1. Prepare the S3 bucket     
-- create AWS s3 bucket in us-west-1 (should be in same region as cluster, currently using `us-west-2`,) note the bucket name - this will hold the Terraform state file  -> **1-time step**
+- Create AWS s3 bucket in us-west-1 (should be in same region as cluster, currently using `us-west-2`,) note the bucket name - this will hold the Terraform state file  -> **1-time step**
 
 ### 2. Update the Terrform Templates
-- update `main.tf` (line 3) with bucket name - line 6 (IAM user) profile if using something other than `[default]`, and also region (if using something other than `us-west-2`)
+- Update `main.tf` (line 3) with bucket name - line 6 (IAM user) profile if using something other than `[default]`, and also region (if using something other than `us-west-2`)
  - update `variables.tf` - change profie and region as above
 
 ### 3. Prepare and run Terraform Templates
-- navigate to `/infrastructure/`directory -> 
+- Navigate to `/infrastructure/`directory -> 
 
-- run `terraform init` - (first time only)
-- run `terraform plan -var-file config.tfvars -out /tmp/tfplan` - verify no errors after it's run
-- run `terraform apply "/tmp/tfplan"` - this can take up to 15 minutes
+- Run `terraform init` - (first time only)
+- Run `terraform plan -var-file config.tfvars -out /tmp/tfplan` - verify no errors after it's run
+- Run `terraform apply "/tmp/tfplan"` - this can take up to 15 minutes
 
-### 4. Verify kubernetes cluster
+### 4. Verify kubernetes cluster  
     --- First Time Only (below) ---
     - from your terminal `cd`
     - then `mkdir .kube`
@@ -95,44 +95,44 @@ NOTE: When we tested on `us-east-1`, we got 'out of resources' errors messages f
     --- First Time Only (above) ---
 
  - from your open terminal run `kubectl cluster-info` 
-    - you should see a cluster address
-    - you can also look in AWS EC2 to see two running instances
+    - Verify a cluster address (URL)
+    - View AWS EC2 running instances in the AWS console
 
 ### 5. Add the nodes, dashboard, RBAC
- - run `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster
- - run `kubectl proxy` 
-    - connect using this proxy address:
+ - Run `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster
+ - Run `kubectl proxy` 
+    - Connect using this proxy address:
     -`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
 - **IMPORTANT** 
-    - leave your terminal window open
-    - leave the Kubernetes dashboard (web page) open
+    - Leave your terminal window open
+    - Leave the Kubernetes dashboard (web page) open
 
 ### 6. Add the Jupyter notebook service
 
- - open a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory 
- - run `kubectl apply -f notebook.yml` - to create the notebook service
- - go to Kubernetes web dashboard 
- - wait for the new pod to turn green
+ - Open a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory 
+ - Run `kubectl apply -f notebook.yml` - to create the notebook service
+ - View the open Kubernetes Web Dashboard 
+ - Wait for the new pod to turn green
  -----
 
 ## Run the example VariantSpark-k Jupyter notebook  
-On the Kubernetes Dashboard
+Using the Kubernetes Web Dashboard
 #### 1. Login to Notebook Service
-- locate the login token for your notebook from the Kubernetes pod log
-- click the service external endpoint link for the notebook service
-    - copy token from URL in log
-    - paste the login token into the Jupyter notebook text box
+- Locate the login token for your notebook from the Kubernetes pod log
+- Click the service external endpoint link for the notebook service
+    - Copy token from URL in log
+    - Paste the login token into the Jupyter notebook text box
 #### 2. Copy Example Notebook
- - go to source - kubernetes -> noteook - upload the notebook using the browser (Jupter) - one level below root (permissions error at top)
- - update the S3 bucket in the notebook (look in S3 for name - long name with date stamp in the bucket name...)
+ - Go to source - kubernetes -> noteook - upload the notebook using the browser (Jupter) - one level below root (permissions error at top)
+ - Update the S3 bucket in the notebook (look in S3 for name - long name with date stamp in the bucket name...)
  #### 3. Add data to S3
- - naviage to your S3 bucket that was created during setup
- - upload data files for analysis 
+ - Naviage to your S3 bucket that was created during setup
+ - Upload data files for analysis 
 #### 4. Run VariantSpark analysis
  - View your example notebook, read notebook and RUN  -or-
  - Update notebook lines 29 - 46 for customized job run 
  - View kubernetes dashboard - watch pods get created (red -> green)
-     - wait 3-4 minutes for job to complete
+     - Wait 3-4 minutes for job to complete
  - Verify job completion in notebook
 
  ***TIPS:*** 
@@ -166,3 +166,8 @@ On the Kubernetes Dashboard
 
 ### Other Information and Notes
  - Heptio tokens time-out, if the connection to the Kubernetes dashboard fails, simply re-fresh the page.
+
+ --------
+ ### Future Work
+ - Parameterize the Terraform templates to be able to specify the cloud provider.  Currently uses AWS only.
+ - Add new capability for AWS EKS 2.0 to support the Kubernetes Horizontal Pod Autoscaler.  See this [link](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) for more information.
