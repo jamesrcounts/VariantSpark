@@ -128,21 +128,21 @@ $ ./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-
 
 ```
 Options: --spark... --conf, 	(Optional) Use when setting non-default Spark configuration (i.e. number and size of executors...)
-		 		 --importance,		  	Run the variableImportance analysis				
-		 		 --locally,			 			(Optional) Use when running on a local Spark cluster
-		 	 	 -if,                 Path to input variant file (.vcf) and file name - formats .vcf, .vcf.bz, .vcf.bz2, parquet
+		 --importance,		  	Run the variableImportance analysis				
+		 --locally,			 	(Optional) Use when running on a local Spark cluster
+		 -if,                 Path to input variant file (.vcf) and file name - formats .vcf, .vcf.bz, .vcf.bz2, parquet
          -ff,                 Path to input label file (.csv) and file name - formats .csv, .txt, .csv.bz2
          -fc,                 Column label name of the label file
-		 	 	 -it parquet,		   		If using parquet file format											
+		 -it parquet,		   	If using parquet file format											
          -v,              	  ???
-         -rn,           			Number of trees (use 100-500 for testing and xxx to yyy for production)
+         -rn,           	  Number of trees (use 100-500 for testing and xxx to yyy for production)
          -rbs,            	  Batch size (use 20-50 for testing and xxx to yyy for production)
-		 	 	 -rmtf,				 				(Optional) default of xxx, for testing set to 0.1 - mtry
+		 -rmtf,				  (Optional) default of xxx, for testing set to 0.1 - mtry
          -ro,                 (Optional) Calculate OOB value, if not configured, is disabled and returns NaN
-		 	 	 -sr,				   				???
-		 	   -on,				   				(Optional) default of xxx, for testing set to 1000
-		 		 -of,				   				(Optional) path to output file
-         -h,  --help           Help message.
+		 -sr,				   ???
+		 -on,				  (Optional) default of xxx, for testing set to 1000
+		 -of,				  (Optional) path to output file
+         -h,  --help          Help message.
 ```
 
 #### Detailed Parameter Example
