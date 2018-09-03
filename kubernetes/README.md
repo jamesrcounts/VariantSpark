@@ -1,78 +1,31 @@
-## VariantSpark-EKS (AWS Kubernetes) Setup Process
+## Why use AWS EKS to host VariantSpark?
 
-Using the provided Terraform scripts to set up a Kubernetes VariantSpark cluster on AWS provides these benefits:
+Use the provided Terraform scripts to set up a Kubernetes VariantSpark AWS EKS cluster to get these benefits:
 - **Quick cluster set up and tear down** - for job runs and load testing
 - **Consistant cluster configuration** - for reproducibility of research
 - **Parameterized scripts** - for flexibility in cluster sizing and vendor selection
 - **Cost savings** - more efficient use of cloud compute resources (than VMs)
+- **Data Lake** - all data is stored in S3.  There is NO NEED to set up an Apache Spark (EMR) cluster
+
+### How to Setup a VariantSpark-EKS cluster
 
 There are three core aspects to use EKS w/VariantSpark. These are as follows:  
 - **One-time setup steps** - client machines require a number of libraries, plan for up to 2 hours for this initial setup
 - **Per job configuration steps** - sizing your cluster and configurating parameters, you may choose to run with Terraform script default cluster sizes (i.e. EC2 type, quantity, etc...) or you may update as needed
 - **Job run execution steps** - launching VariantSpark on AWS EKS requires only two steps, we provide a connected Jupyter client if you wish to use this to launch jobs
- --- 
 
------ ONE TIME INSTALLATION STEPS ----
-1. General Prereqs
-   
-    a. **AWS account & tools** - create / configure
-    - AWS Account  (currently using lynnlangit's demo AWS account)
-    - AWS IAM user (currently using lynnlangit's demo IAM user)
-    - AWS cli 
-        - run `aws configure` to verify configuration for `--default` profile
-        - could use IAM user with use non-default (named) profile  
+---
 
-    b. **Git** - install **git** or **GitHub Desktop**
-    - **pull GitHub Repos** `VariantSpark -k` and `VariantSpark`
-    - IMPORTANT: pull VS branch for Spark 2.3 on Jim's fork) repos from GitHub 
+## Detailed Setup for a VariantSpark-k cluster
 
-2. Client Service Prereqs (IMPORTANT: instructions for Mac/OSX)
+TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources' error message.
 
-    The client requires particular versions of Terraform, Docker, Kubernetes and Heptio. Also the client install process varies for Windows, Mac or Linux clients.  These instructions are for Mac clients
-
-    - **0. Homebrew** - install and update package manager
-        - install homebrew (then `brew update` & then `brew upgrade`)
-        - this may take 10-15 minutes
-    - **1. Terraform** - `brew install terraform` - use Terraform 11.7 or greater 
-    - **2. Docker** - can get Kitematic (GUI for Docker as well), use Docker 18.06 or greater
-    - **3a. Kubernetes** - Requires version 1.10+ due to IAM requirement, do **NOT** use 'brew install', need latest version from AWS for EKS, install from this link --  
-
-         - Download: `wget -O kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl`  
-
-         - Unzip: unzip if needed
-
-         - Set Permissions: `chmod +x ./kubectl`     
-        
-         - Move: `sudo mv ./kubectl /usr/local/bin/kubectl` 
-
-         - Verify install: `kubectl version`
-
-        NOTE:  If you have an older version of Kubernetes, you should delete that directory to avoid version conflict (for example you may need to delete `\gcloud` (sdk) )  
-
-    - **3b. AWS-IAM-Authenticator** - Authentication for IAM, required for AWS EKS, see [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html) to install the AWS-IAM-Authenticator for EKS.   
-    
-        NOTES: 
-         - get the version for your host OS
-         - do NOT install using Go-Get
-
-        - Download: `https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator`
-
-        - Set Permissions: 
-        - Set path:
-        - Verify install:
-
-    **Important** to verify the version of Kubernetes 1.10+, which is needed to interoperate with another requirement, which is to use Heptio/AWS IAM with EKS.  You should verify the following text after you run `kubectl version` :   
-     
-        `Client Version: version.Info{Major:"1", Minor:"11",...`  
-
--------
-
-## To Setup a VariantSpark-k cluster
-
-We are running in `us-west-2` (Oregon).  AWS EKS is only available in `us-west-2` or `us-east-1` currently.  TIP: When we tested on `us-east-1`, we got 'out of resources' errors messages from EKS.
+### 0. Setup the 'one-time only' client steps
+- You only need to do these steps ONCE  
+- Steps are listed at the BOTTOM of this document
 
 ### 1. Prepare the S3 bucket     
-- Create AWS s3 bucket in us-west-1 (should be in same region as cluster, currently using `us-west-2`,) note the bucket name - this will hold the Terraform state file  -> **1-time step**
+- Create AWS s3 bucket in us-west-2 (should be in same region as cluster, currently using `us-west-2`,) note the bucket name - this will hold the Terraform state file  -> **1-time step**
 
 ### 2. Update the Terrform Templates
 - Update `main.tf` (line 3) with bucket name - line 6 (IAM user) profile if using something other than `[default]`, and also region (if using something other than `us-west-2`)
@@ -99,7 +52,8 @@ We are running in `us-west-2` (Oregon).  AWS EKS is only available in `us-west-2
     - View AWS EC2 running instances in the AWS console
 
 ### 5. Add the nodes, dashboard, RBAC
- - Run `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster
+ - Run `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster  
+
  - Run `kubectl proxy` 
     - Connect using this proxy address:
     -`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
@@ -109,7 +63,8 @@ We are running in `us-west-2` (Oregon).  AWS EKS is only available in `us-west-2
 
 ### 6. Add the Jupyter notebook service
 
- - Open a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory 
+ - Open a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory  
+ 
  - Run `kubectl apply -f notebook.yml` - to create the notebook service
  - View the open Kubernetes Web Dashboard 
  - Wait for the new pod to turn green
@@ -171,3 +126,60 @@ Using the Kubernetes Web Dashboard
  ### Future Work
  - Parameterize the Terraform templates to be able to specify the cloud provider.  Currently uses AWS only.
  - Add new capability for AWS EKS 2.0 to support the Kubernetes Horizontal Pod Autoscaler.  See this [link](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) for more information.
+
+  ---  
+ 
+----- ONE TIME INSTALLATION STEPS ------------------
+1. General Prereqs
+   
+    a. **AWS account & tools** - create / configure
+    - AWS Account  (currently using lynnlangit's demo AWS account)
+    - AWS IAM user (currently using lynnlangit's demo IAM user)
+    - AWS cli 
+        - run `aws configure` to verify configuration for `--default` profile
+        - could use IAM user with use non-default (named) profile  
+
+    b. **Git** - install **git** or **GitHub Desktop**
+    - **pull GitHub Repos** `VariantSpark -k` and `VariantSpark`
+    - IMPORTANT: pull VS branch for Spark 2.3 on Jim's fork) repos from GitHub 
+
+2. Client Service Prereqs (IMPORTANT: instructions for Mac/OSX)
+
+    The client requires particular versions of Terraform, Docker, Kubernetes and Heptio. Also the client install process varies for Windows, Mac or Linux clients.  These instructions are for Mac clients
+
+    - **0. Homebrew** - install and update package manager
+        - install homebrew (then `brew update` & then `brew upgrade`)
+        - this may take 10-15 minutes
+    - **1. Terraform** - `brew install terraform` - use Terraform 11.7 or greater 
+    - **2. Docker** - can get Kitematic (GUI for Docker as well), use Docker 18.06 or greater
+    - **3a. Kubernetes** - Requires version 1.10+ due to IAM requirement, do **NOT** use 'brew install', need latest version from AWS for EKS, install from this link --  
+
+         - Download: `wget -O kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl`  
+
+         - Unzip: unzip if needed
+
+         - Set Permissions: `chmod +x ./kubectl`     
+        
+         - Move: `sudo mv ./kubectl /usr/local/bin/kubectl` 
+
+         - Verify install: `kubectl version`
+
+        NOTE:  If you have an older version of Kubernetes, you should delete that directory to avoid version conflict (for example you may need to delete `\gcloud` (sdk) )  
+
+    - **3b. AWS-IAM-Authenticator** - Authentication for IAM, required for AWS EKS, see [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html) to install the AWS-IAM-Authenticator for EKS.   
+    
+        NOTES: 
+         - get the version for your host OS
+         - do NOT install using Go-Get
+
+        - Download: `https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator`
+
+        - Set Permissions: 
+        - Set path:
+        - Verify install:
+
+    **Important** to verify the version of Kubernetes 1.10+, which is needed to interoperate with another requirement, which is to use Heptio/AWS IAM with EKS.  You should verify the following text after you run `kubectl version` :   
+     
+        `Client Version: version.Info{Major:"1", Minor:"11",...`  
+
+-------
