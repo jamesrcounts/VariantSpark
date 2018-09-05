@@ -126,24 +126,25 @@ Example running locally
 $ ./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
 ```
 
-```
-Options: --spark... --conf, 	(Optional) Use when setting non-default Spark configuration (i.e. number and size of executors...)
-		 --importance,		  	Run the variableImportance analysis				
-		 --locally,			 	(Optional) Use when running on a local Spark cluster
-		 -if,                 Path to input variant file (.vcf) and file name - formats .vcf, .vcf.bz, .vcf.bz2, parquet
-         -ff,                 Path to input label file (.csv) and file name - formats .csv, .txt, .csv.bz2
-         -fc,                 Column label name of the label file
-		 -it parquet,		   	If using parquet file format											
-         -v,              	  ???
-         -rn,           	  Number of trees (use 100-500 for testing and xxx to yyy for production)
-         -rbs,            	  Batch size (use 20-50 for testing and xxx to yyy for production)
-		 -rmtf,				  (Optional) default of xxx, for testing set to 0.1 - mtry
-         -ro,                 (Optional) Calculate OOB value, if not configured, is disabled and returns NaN
-		 -sr,				   ???
-		 -on,				  (Optional) default of xxx, for testing set to 1000
-		 -of,				  (Optional) path to output file
-         -h,  --help          Help message.
-```
+| Short Param  | Long Param      | Info                                         | Notes |
+|--------------|-----------------|----------------------------------------------|-------------------|
+| --spark      |                 | --conf (configuration)                       | optional - Spark config, i.e. size / number of executors                    |
+| --importance |                 | runs variableImportance analysis             |                     |
+| --locally    |                 | runs locally                                 | optional - runs locally |
+| -if          |                 | input variant file path and filename         | formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
+| -ff          | featuresFile    | input feature (label) file path and filename | formats .csv, .txt, .csv.bz2  |
+| -fc          | featuresColumn  | column label name of feature (label) file    |   |
+| -it parquet  | inputType       | input file type                              | optional                 |
+| -v           |                 | ???                                          | ???                         |
+| -rn          |                 | number of trees                              | use 100-500 for testing  |
+| -rbs         | rfBatchSize     | batch size                                   | use 20-50 for testing    |
+| -rmtf        |                 | mtry value                                   | optional, use 0.1 for testing   |
+| -ro          |                 | calculate OOB                                | optional, disabled by default (returns NaN)   |
+| -sr          |                 | ???                                          | ???   |
+| -on          |                 | ???                                          | optional, for testing set to 1000   |
+| -of          | outputFile      | path to output files                         | optional  |
+| --help       |                 | help messages                                | optional  |
+		
 
 #### Detailed Parameter Example
 
