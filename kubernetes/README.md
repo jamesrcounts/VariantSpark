@@ -1,44 +1,40 @@
-## Why use AWS EKS to host VariantSpark?
+# VariantSpark on AWS EKS (Kubernetes)
 
-Use the provided Terraform scripts to set up a Kubernetes VariantSpark AWS EKS cluster to get these benefits:
-- **Quick cluster set up and tear down** - for job runs and load testing
-- **Consistant cluster configuration** - for reproducibility of research
-- **Parameterized scripts** - for flexibility in cluster sizing and vendor selection
-- **Cost savings** - more efficient use of cloud compute resources (than VMs)
-- **Data Lake** - all data is stored in S3.  There is NO NEED to set up an Apache Spark (EMR) cluster
+Customize and run the provided Terraform scripts to set up a VariantSpark container cluster using AWS EKS (Kubernetes) for these business reasons:
+- **FAST cluster set up & tear down** - for job runs & load testing  
+
+- **CONSISTANT cluster configuration** - for reproducibility of research
+- **FLEXIBLE scripts** - configure script parameters for best-fit cluster sizing & cloud vendor selection
+- **SAVE money** - reduce cloud compute service charges by using ephemeral docker containers rather than always on VMs (Virtual Machines).
+- **SIMPLE storage / Data Lake** - all data is stored in S3.  There is NO NEED to set up an Apache Spark (EMR) cluster
 
 ### How to Setup a VariantSpark-EKS cluster
 
-There are three core aspects to use EKS w/VariantSpark. These are as follows:  
-- **One-time setup steps** - client machines require a number of libraries, plan for up to 2 hours for this initial setup
-- **Per job configuration steps** - sizing your cluster and configurating parameters, you may choose to run with Terraform script default cluster sizes (i.e. EC2 type, quantity, etc...) or you may update as needed
-- **Job run execution steps** - launching VariantSpark on AWS EKS requires only two steps, we provide a connected Jupyter client if you wish to use this to launch jobs
+3 core configuration areas needed to use EKS w/VariantSpark are as follows:  
+- **One-time setup steps** - your client machine requires a number of libraries, plan for up to 2 hours for this initial setup
+- **Per job configuration steps** - your custom cluster sizing cluster (parameters), you can use the Terraform script defaults (i.e. EC2 type, quantity, etc...) or you may update as needed
+- **Job run execution steps** - after you've completed the one-time client setup steps, then launching your VariantSpark job on AWS EKS requires only two steps. We also provide a Jupyter client node if you prefer to use this to launch jobs (rather than the command line).
 
 ---
 
 ## Detailed Setup for a VariantSpark-k cluster
 
-TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources' error message.
+TIP: Use `us-west-2` (Oregon) -   in `us-east-1` EKS returned an 'out of resources' error message.
 
 ### 0. Setup the 'one-time only' client steps
-- You only need to do these steps ONCE  
-- Steps are listed at the BOTTOM of this document
+- You only need to do these client setup steps only ONCE, steps are listed at the BOTTOM of this document
 
-### 1. Prepare the S3 bucket     
-- Create AWS s3 bucket in us-west-2 (should be in same region as cluster, currently using `us-west-2`,) note the bucket name - this will hold the Terraform state file  -> **1-time step**
-
-### 2. Update the Terrform Templates
+### 1. Update the Terrform Templates
 - Update `main.tf` (line 3) with bucket name - line 6 (IAM user) profile if using something other than `[default]`, and also region (if using something other than `us-west-2`)
- - update `variables.tf` - change profie and region as above
+ - update `variables.tf` - change profile and region as above
+ - update the `variables.tf` in the `\modules\eks\` folder - change the `worker_size` for your EC2 instance sizes
 
-### 3. Prepare and run Terraform Templates
-- Navigate to `/infrastructure/`directory -> 
-
-- Run `terraform init` - (first time only)
+### 2. Prepare and run Terraform Templates
+- Navigate to `/infrastructure/`directory -> Run `terraform init` - (first time only)
 - Run `terraform plan -var-file config.tfvars -out /tmp/tfplan` - verify no errors after it's run
 - Run `terraform apply "/tmp/tfplan"` - this can take up to 15 minutes
 
-### 4. Verify kubernetes cluster  
+### 3. Verify kubernetes cluster  
     --- First Time Only (below) ---
     - from your terminal `cd`
     - then `mkdir .kube`
@@ -51,7 +47,7 @@ TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources
     - Verify a cluster address (URL)
     - View AWS EC2 running instances in the AWS console
 
-### 5. Add the nodes, dashboard, RBAC
+### 4. Add the nodes, dashboard, RBAC
  - Run `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster  
 
  - Run `kubectl proxy` 
@@ -61,7 +57,7 @@ TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources
     - Leave your terminal window open
     - Leave the Kubernetes dashboard (web page) open
 
-### 6. Add the Jupyter notebook service
+### 5. Add the Jupyter notebook service
 
  - Open a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory  
  
@@ -120,7 +116,7 @@ Using the Kubernetes Web Dashboard
 -----
 
 ### Other Information and Notes
- - Heptio tokens time-out, if the connection to the Kubernetes dashboard fails, simply re-fresh the page.
+ - AWS-IAM-Authenticator (was named 'Heptio') tokens time-out, if the connection to the Kubernetes dashboard fails, simply re-fresh the page.
 
  --------
  ### Future Work
@@ -130,7 +126,7 @@ Using the Kubernetes Web Dashboard
   ---  
  
 ----- ONE TIME INSTALLATION STEPS ------------------
-1. General Prereqs
+1. General Prereqs - TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources' error message.
    
     a. **AWS account & tools** - create / configure
     - AWS Account  (currently using lynnlangit's demo AWS account)
