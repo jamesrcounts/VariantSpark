@@ -1,85 +1,74 @@
 # VariantSpark on AWS EKS (Kubernetes)
 
-Customize and run the provided Terraform scripts to set up a VariantSpark container cluster using AWS EKS (Kubernetes) for these business reasons:
-- **FAST cluster set up & tear down** - for job runs & load testing  
+Customize & run the provided Terraform scripts to set up a VariantSpark container cluster using AWS EKS (Kubernetes) for these business reasons:  
 
-- **CONSISTANT cluster configuration** - for reproducibility of research
-- **FLEXIBLE scripts** - configure script parameters for best-fit cluster sizing & cloud vendor selection
-- **SAVE money** - reduce cloud compute service charges by using ephemeral docker containers rather than always on VMs (Virtual Machines).
-- **SIMPLE storage / Data Lake** - all data is stored in S3.  There is NO NEED to set up an Apache Spark (EMR) cluster
+1. **FAST cluster set up & tear down** - for job runs & load testing
+ 2. **CONSISTANT cluster configuration** - for reproducibility of research
+3. **FLEXIBLE scripts** - configure script parameters for best-fit cluster sizing & cloud vendor selection
+4. **SAVE money** - reduce cloud compute service charges by using ephemeral docker containers rather than always on VMs (Virtual Machines).
+5. **SIMPLE storage / Data Lake** - all data is stored in S3.  There is NO NEED to set up an Apache Spark (EMR) cluster
 
-### How to Setup a VariantSpark-EKS cluster
+There are 3 core client configuration areas which you need to setup in order to use EKS w/VariantSpark:  
+- **One-time setup steps** - your client machine requires a number of libraries, plan for up to 2 hours for this initial setup  
 
-3 core configuration areas needed to use EKS w/VariantSpark are as follows:  
-- **One-time setup steps** - your client machine requires a number of libraries, plan for up to 2 hours for this initial setup
 - **Per job configuration steps** - your custom cluster sizing cluster (parameters), you can use the Terraform script defaults (i.e. EC2 type, quantity, etc...) or you may update as needed
 - **Job run execution steps** - after you've completed the one-time client setup steps, then launching your VariantSpark job on AWS EKS requires only two steps. We also provide a Jupyter client node if you prefer to use this to launch jobs (rather than the command line).
 
 ---
 
-## Detailed Setup for a VariantSpark-k cluster
+## Setup a VariantSpark-k cluster
 
-TIP: Use `us-west-2` (Oregon) -   in `us-east-1` EKS returned an 'out of resources' error message.
+### 0. SETUP 'one-time only' client steps
+- Do steps listed at the BOTTOM of this document
+- TIP: Use `us-west-2` (Oregon) -   in `us-east-1` EKS returned an 'out of resources' error message.
 
-### 0. Setup the 'one-time only' client steps
-- You only need to do these client setup steps only ONCE, steps are listed at the BOTTOM of this document
-
-### 1. Update the Terrform Templates
+### 1. CONFIG Terraform Template files
 - Update `main.tf` (line 3) with bucket name - line 6 (IAM user) profile if using something other than `[default]`, and also region (if using something other than `us-west-2`)
  - update `variables.tf` - change profile and region as above
  - update the `variables.tf` in the `\modules\eks\` folder - change the `worker_size` for your EC2 instance sizes
 
-### 2. Prepare and run Terraform Templates
+### 2. INIT/RUN Terraform Templates
 - Navigate to `/infrastructure/`directory -> Run `terraform init` - (first time only)
 - Run `terraform plan -var-file config.tfvars -out /tmp/tfplan` - verify no errors after it's run
 - Run `terraform apply "/tmp/tfplan"` - this can take up to 15 minutes
 
-### 3. Verify kubernetes cluster  
-    --- First Time Only (below) ---
-    - from your terminal `cd`
-    - then `mkdir .kube`
-    - then `cd -`
-    - then `/Users/lynnlangit/Documents/GitHub/variantspark-k`
-    - then `cp infrastructure/out/config ~/.kube`  
-    --- First Time Only (above) ---
+### 3. CONFIGURE Kubernetes  
+ - RUN - First Time Only (from terminal) & VERIFY Cluster
+    - `mkdir .kube`
+    - `cd -`
+    - `/Users/lynnlangit/Documents/GitHub/variantspark-k`
+    - `cp infrastructure/out/config ~/.kube`  
+    - `kubectl cluster-info` - verify a cluster address (URL)
 
- - from your open terminal run `kubectl cluster-info` 
-    - Verify a cluster address (URL)
-    - View AWS EC2 running instances in the AWS console
-
-### 4. Add the nodes, dashboard, RBAC
- - Run `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster  
-
- - Run `kubectl proxy` 
-    - Connect using this proxy address:
+### 4. ADD nodes, dashboard, RBAC
+ - RUN `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster  
+ - RUN `kubectl proxy` 
+ - CONNECT using this proxy address:
     -`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
-- **IMPORTANT** 
     - Leave your terminal window open
     - Leave the Kubernetes dashboard (web page) open
 
-### 5. Add the Jupyter notebook service
+### 5. ADD Jupyter notebook service node
 
- - Open a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory  
- 
- - Run `kubectl apply -f notebook.yml` - to create the notebook service
- - View the open Kubernetes Web Dashboard 
- - Wait for the new pod to turn green
+ - OPEN a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory  
+ - RUN `kubectl apply -f notebook.yml` - to create the notebook service
+ - VIEW the Kubernetes Web Dashboard, wait for the new pod to turn GREEN
  -----
 
-## Run the example VariantSpark-k Jupyter notebook  
-Using the Kubernetes Web Dashboard
-#### 1. Login to Notebook Service
+## RUN the example VariantSpark-k Jupyter notebook  
+Use the Kubernetes Web Dashboard
+#### 1. LOGIN to Notebook Service
 - Locate the login token for your notebook from the Kubernetes pod log
 - Click the service external endpoint link for the notebook service
     - Copy token from URL in log
     - Paste the login token into the Jupyter notebook text box
-#### 2. Copy Example Notebook
+#### 2. COPY Example Notebooks
  - Go to source - kubernetes -> noteook - upload the notebook using the browser (Jupter) - one level below root (permissions error at top)
  - Update the S3 bucket in the notebook (look in S3 for name - long name with date stamp in the bucket name...)
- #### 3. Add data to S3
+ #### 3. ADD data to S3
  - Naviage to your S3 bucket that was created during setup
  - Upload data files for analysis 
-#### 4. Run VariantSpark analysis
+#### 4. RUN VariantSpark analysis
  - View your example notebook, read notebook and RUN  -or-
  - Update notebook lines 29 - 46 for customized job run 
  - View kubernetes dashboard - watch pods get created (red -> green)
@@ -102,16 +91,18 @@ Using the Kubernetes Web Dashboard
 
 ----
 
-## Tear Down the Cluster
+## DELETE a VS-k Cluster
 
 - from the **VariantSpark** open terminal window
-    - `kubectl delete -f notebook.yml` -> deletes the services (& pods)
-        - verify that this also deleted AWS NLB and AWS VPC
+    - `kubectl delete -f notebook.yml` -> deletes the Jupyter service (& pods)
 - from **variantspark-k** open terminal window
-    - `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` (verify no errors!)
-    - `terraform apply /tmp/tfplan`
+    - stop the Kubernetes web page ('ctrl+c')
+    - run `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` (verify no errors!)
+    - run `terraform apply /tmp/tfplan`
+    - verify that this also deleted AWS NLB and AWS VPC
 - manually delete s3 buckets with data (optional)
-    - state-storage and data
+    - VS source data
+    - terraform state-storage 
 
 -----
 
