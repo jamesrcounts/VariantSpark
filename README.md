@@ -123,24 +123,24 @@ $ ./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-
 ```
 NOTE: Parameters marked with an asterisk (*) are required, others are optional
 
-| Short Param   | Param Name      | Info                                         | Long Param & Notes |
-|---------------|-----------------|----------------------------------------------|-------------------|
-| --sp          | sparkPar        | --conf (configuration)                       | --spark-par, (Spark config - size / # of executors)    |
-| --            | ImportanceCmd*  | runs variableImportance analysis             | -- importance, '-- ' is a terminator BEFORE importance cmd      |
-| --local       | runLocal        | runs locally                                 | --local, - runs job locally |
-| -if           | *inputFile      | input variant file path and filename         | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
-| -ff           | *featuresFile   | input feature (label) file path and filename | --feature-file, formats .csv, .txt, .csv.bz2  |
-| -fc           | *featureColumn  | column label name of feature (label) file    | --feature-column  |
-| -it parquet   | inputType       | input file type                              | --input-type                 |
-| -v            | beVerbose       | verbose output                               | --verbose                   |
-| -rn           | *nTrees         | number of trees                              | --rf-n-trees, use 100-500 for testing  |
-| -rbs          | *rfBatchSize    | batch size                                   | --rf-batch-size, use 20-50 for testing    |
-| -rmtf         | rfMTry          | mtry value                                   | --rf-mtry-fractions, use 0.1 for testing   |
-| -ro           | rfEstimateOob   | calculate OOB                                | --rf-oob, disabled by default (returns NaN)   |
-| -sr           | randomSeed      | random seed                                  | --seed, default=(random)   |
-| -on           | outputVarCount  | number of top important variables output     | --output-n-variables, default=20, (if testing set to 1000)   |
-| -of           | outputFile      | path to output files                         | --output-file   |
-| -h            | help            | help messages                                | --help   |
+| Short Param | Param Name     | Info                                         | Long Param & Notes |
+|-------------|----------------|----------------------------------------------|-------------------|
+| --sp        | sparkPar       | --conf (configuration)                       | --spark-par, (Spark config - size / # of executors)    |
+| --          | *ImportanceCmd | runs variableImportance analysis             | -- importance, '-- ' is a terminator BEFORE importance cmd      |
+| --local     | runLocal       | runs locally                                 | --local, - runs job locally |
+| -if         | *inputFile     | input variant file path & filename           | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
+| -ff         | *featuresFile  | input feature (label) file path & filename   | --feature-file, formats .csv, .txt, .csv.bz2  |
+| -fc         | *featureColumn | column label name of feature (label) file    | --feature-column  |
+| -it parquet | inputType      | input file type                              | --input-type                 |
+| -v          | beVerbose      | verbose output                               | --verbose                   |
+| -rn         | *nTrees        | number of trees                              | --rf-n-trees, use 100-500 for testing  |
+| -rbs        | *rfBatchSize   | batch size                                   | --rf-batch-size, use 20-50 for testing    |
+| -rmtf       | rfMTry         | mtry value                                   | --rf-mtry-fractions, use 0.1 for testing   |
+| -ro         | rfEstimateOob  | calculate OOB                                | --rf-oob, disabled by default (returns NaN)   |
+| -sr         | randomSeed     | random seed                                  | --seed, default=(random)   |
+| -on         | outputVarCount | number of top important variables output     | --output-n-variables, default=20, (if testing set to 1000)   |
+| -of         | outputFile     | path to output files                         | --output-file   |
+| -h          | help           | help messages                                | --help   |
 
 ---
 
