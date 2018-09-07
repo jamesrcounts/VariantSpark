@@ -1,36 +1,19 @@
 # VariantSpark on AWS EKS (Kubernetes)
 
-Customize & run the provided Terraform scripts to set up a VariantSpark container cluster using AWS EKS (Kubernetes) for these business reasons:  
-
-1. **FAST cluster set up & tear down** - for job runs & load testing
- 2. **CONSISTANT cluster configuration** - for reproducibility of research
-3. **FLEXIBLE scripts** - configure script parameters for best-fit cluster sizing & cloud vendor selection
-4. **SAVE money** - reduce cloud compute service charges by using ephemeral docker containers rather than always on VMs (Virtual Machines).
-5. **SIMPLE storage / Data Lake** - all data is stored in S3.  There is NO NEED to set up an Apache Spark (EMR) cluster
-
-There are 3 core client configuration areas which you need to setup in order to use EKS w/VariantSpark:  
-- **One-time setup steps** - your client machine requires a number of libraries, plan for up to 2 hours for this initial setup  
-
-- **Per job configuration steps** - your custom cluster sizing cluster (parameters), you can use the Terraform script defaults (i.e. EC2 type, quantity, etc...) or you may update as needed
-- **Job run execution steps** - after you've completed the one-time client setup steps, then launching your VariantSpark job on AWS EKS requires only two steps. We also provide a Jupyter client node if you prefer to use this to launch jobs (rather than the command line).
-
----
-
-## Setup a VariantSpark-k cluster
 
 ### 0. SETUP 'one-time only' client steps
-- Do steps listed at the BOTTOM of this document
-- TIP: Use `us-west-2` (Oregon) -   in `us-east-1` EKS returned an 'out of resources' error message.
+- COMPLETE steps listed at the BOTTOM of this document
+- USE `us-west-2` (Oregon) 
 
 ### 1. CONFIG Terraform Template files
-- Update `main.tf` (line 3) with bucket name - line 6 (IAM user) profile if using something other than `[default]`, and also region (if using something other than `us-west-2`)
- - update `variables.tf` - change profile and region as above
- - update the `variables.tf` in the `\modules\eks\` folder - change the `worker_size` for your EC2 instance sizes
+ - UPDATE the `variables.tf` in the `\modules\eks\` folder - change the `worker_size` for your EC2 instance sizes
 
 ### 2. INIT/RUN Terraform Templates
-- Navigate to `/infrastructure/`directory -> Run `terraform init` - (first time only)
-- Run `terraform plan -var-file config.tfvars -out /tmp/tfplan` - verify no errors after it's run
-- Run `terraform apply "/tmp/tfplan"` - this can take up to 15 minutes
+- GO to `/infrastructure/` -> RUN `terraform init` - (first time only)
+- RUN `terraform plan -var-file config.tfvars -out /tmp/tfplan` 
+- VERIFY no errors after it's run
+- RUN `terraform apply "/tmp/tfplan"` 
+- WAIT - this can take up to 15 minutes
 
 ### 3. CONFIGURE Kubernetes  
  - RUN - First Time Only (from terminal) & VERIFY Cluster
