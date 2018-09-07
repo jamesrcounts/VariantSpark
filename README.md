@@ -116,39 +116,54 @@ By default the sample data will installed into the `variant-spark-data\input` su
 
 Note: if you installed the data to a non default location the `VS_DATA_DIR` needs to be set accordingly when running the examples
 
------
-
+ - Example Job Runs with Parameters (second one runs locally)
 ```
-Example and Parameters
 $ variant-spark importance -if ../data/chr22_1000.vcf -ff ../data/chr22-labels.csv -fc 22_16050408 -v -rn 500 -rbs 20 -ro -sr 13
-
-Example running locally
-$ ./variant-spark --local --importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
+$ ./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
 ```
+NOTE: Parameters marked with an asterisk (*) are required, others are optional
 
 | Short Param   | Param Name      | Info                                         | Long Param & Notes |
 |---------------|-----------------|----------------------------------------------|-------------------|
-| --sp          | sparkPar        | --conf (configuration)                       | --spark-par, optional (Spark config - size / # of executors)    |
-| --importance  | importanceCmd   | runs variableImportance analysis             | --importance, runs main analysis method                    |
-| --local       | runLocal        | runs locally                                 | --local, optional - runs locally |
-| -if           | inputFile       | input variant file path and filename         | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
-| -ff           | featuresFile    | input feature (label) file path and filename | --feature-file, formats .csv, .txt, .csv.bz2  |
-| -fc           | featureColumn   | column label name of feature (label) file    | --feature-column  |
-| -it parquet   | inputType       | input file type                              | --input-type, optional                 |
+| --sp          | sparkPar        | --conf (configuration)                       | --spark-par, (Spark config - size / # of executors)    |
+| --            | ImportanceCmd*  | runs variableImportance analysis             | -- importance, '-- ' is a terminator BEFORE importance cmd      |
+| --local       | runLocal        | runs locally                                 | --local, - runs job locally |
+| -if           | *inputFile      | input variant file path and filename         | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
+| -ff           | *featuresFile   | input feature (label) file path and filename | --feature-file, formats .csv, .txt, .csv.bz2  |
+| -fc           | *featureColumn  | column label name of feature (label) file    | --feature-column  |
+| -it parquet   | inputType       | input file type                              | --input-type                 |
 | -v            | beVerbose       | verbose output                               | --verbose                   |
-| -rn           | nTrees          | number of trees                              | --rf-n-trees, use 100-500 for testing  |
-| -rbs          | rfBatchSize     | batch size                                   | --rf-batch-size, use 20-50 for testing    |
-| -rmtf         | rfMTry          | mtry value                                   | --rf-mtry-fractions, optional, use 0.1 for testing   |
-| -ro           | rfEstimateOob   | calculate OOB                                | --rf-oob, optional, disabled by default (returns NaN)   |
+| -rn           | *nTrees         | number of trees                              | --rf-n-trees, use 100-500 for testing  |
+| -rbs          | *rfBatchSize    | batch size                                   | --rf-batch-size, use 20-50 for testing    |
+| -rmtf         | rfMTry          | mtry value                                   | --rf-mtry-fractions, use 0.1 for testing   |
+| -ro           | rfEstimateOob   | calculate OOB                                | --rf-oob, disabled by default (returns NaN)   |
 | -sr           | randomSeed      | random seed                                  | --seed, default=(random)   |
-| -on           | outputVarCount  | number of top important variables output     | --output-n-variables, default=20, optional (testing set to 1000)   |
-| -of           | outputFile      | path to output files                         | --output-file, optional  |
-| -h            | help            | help messages                                | --help, optional  |
-		
-#### Detailed Parameter Example
+| -on           | outputVarCount  | number of top important variables output     | --output-n-variables, default=20, (if testing set to 1000)   |
+| -of           | outputFile      | path to output files                         | --output-file   |
+| -h            | help            | help messages                                | --help   |
 
-The detailed parameter output directly below this sentence is produced when running the command in the section below it.  
-Detailed Command:
+---
+
+		
+#### Parameter Job Run Example
+
+When you run an instance of a VariantSpark job using (required and/or optional) parameters, you can use the 'short param' syntax to quickly write the command.  An example is shown below.  After you execute this command, VariantSpark will translate your command into a detailed job run command by translating the short parameters into the full parameter names.  Also VariantSpark will list all parameters and their current values, including default parameters and their default values.
+
+---
+Section 1 - Sample VariantSpark importance analysis (job run) written using short parameter syntax:
+
+```
+	au.csiro.variantspark.cli.VariantSparkApp importance
+	-if s3a://variant-spark/datasets/synthetic/data_s5000_v2500000_r13.parquet
+	-ff s3a://variant-spark/datasets/synthetic/labels_s5000_v2500000_r13_f0.125.csv
+	-fc resp
+	-it parquet
+	-v
+	-rn 100
+	-rbs 28
+	-ro
+```
+Section 2 - Sample VariantSpark importance analysis (job written) translated from Section 1 (short parameters) to full command syntax:
 
 ```
 au.csiro.variantspark.cli.ImportanceCmd@60859f5a
@@ -179,20 +194,7 @@ au.csiro.variantspark.cli.ImportanceCmd@60859f5a
 	sc=org.apache.spark.SparkContext@55a88417,
 	sqlContext=<null>;]
 ```
----
-Actual Command that produces the command shown above:
 
-```
-	au.csiro.variantspark.cli.VariantSparkApp importance
-	-if s3a://variant-spark/datasets/synthetic/data_s5000_v2500000_r13.parquet
-	-ff s3a://variant-spark/datasets/synthetic/labels_s5000_v2500000_r13_f0.125.csv
-	-fc resp
-	-it parquet
-	-v
-	-rn 100
-	-rbs 28
-	-ro
-```
 ---
 
 #### Databricks notebook examples
