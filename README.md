@@ -126,24 +126,24 @@ Example running locally
 $ ./variant-spark --local --importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
 ```
 
-| Short Param   | Long Param      | Info                                         | Notes |
+| Short Param   | Param Name      | Info                                         | Long Param & Notes |
 |---------------|-----------------|----------------------------------------------|-------------------|
-| --spark       |                 | --conf (configuration)                       | optional - Spark config, i.e. size / number of executors    |
-| --importance  |                 | runs variableImportance analysis             |                     |
-| --locally     |                 | runs locally                                 | optional - runs locally |
-| -if           |                 | input variant file path and filename         | formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
-| -ff           | featuresFile    | input feature (label) file path and filename | formats .csv, .txt, .csv.bz2  |
-| -fc           | featureColumn   | column label name of feature (label) file    |   |
-| -it parquet   | inputType       | input file type                              | optional                 |
-| -v            |                 | ???                                          | ???                         |
-| -rn           | nTrees          | number of trees                              | use 100-500 for testing  |
-| -rbs          | rfBatchSize     | batch size                                   | use 20-50 for testing    |
-| -rmtf         | rfMTry          | mtry value                                   | optional, use 0.1 for testing   |
-| -ro           | rfEstimateOob   | calculate OOB                                | optional, disabled by default (returns NaN)   |
-| -sr           |                 | ???                                          | ???   |
-| -on           |                 | ???                                          | optional, for testing set to 1000   |
-| -of           | outputFile      | path to output files                         | optional  |
-| --help        |                 | help messages                                | optional  |
+| --sp          | sparkPar        | --conf (configuration)                       | --spark-par, optional (Spark config - size / # of executors)    |
+| --importance  | importanceCmd   | runs variableImportance analysis             | --importance, runs main analysis method                    |
+| --local       | runLocal        | runs locally                                 | --local, optional - runs locally |
+| -if           | inputFile       | input variant file path and filename         | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
+| -ff           | featuresFile    | input feature (label) file path and filename | --feature-file, formats .csv, .txt, .csv.bz2  |
+| -fc           | featureColumn   | column label name of feature (label) file    | --feature-column  |
+| -it parquet   | inputType       | input file type                              | --input-type, optional                 |
+| -v            | beVerbose       | verbose output                               | --verbose                   |
+| -rn           | nTrees          | number of trees                              | --rf-n-trees, use 100-500 for testing  |
+| -rbs          | rfBatchSize     | batch size                                   | --rf-batch-size, use 20-50 for testing    |
+| -rmtf         | rfMTry          | mtry value                                   | --rf-mtry-fractions, optional, use 0.1 for testing   |
+| -ro           | rfEstimateOob   | calculate OOB                                | --rf-oob, optional, disabled by default (returns NaN)   |
+| -sr           | randomSeed      | random seed                                  | --seed, default=(random)   |
+| -on           | outputVarCount  | number of top important variables output     | --output-n-variables, default=20, optional (testing set to 1000)   |
+| -of           | outputFile      | path to output files                         | --output-file, optional  |
+| -h            | help            | help messages                                | --help, optional  |
 		
 #### Detailed Parameter Example
 
