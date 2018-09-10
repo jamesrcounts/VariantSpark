@@ -40,18 +40,18 @@
     - WAIT for the new Jupyter pod to turn GREEN
  -----
 
-## RUN the example VariantSpark-k Jupyter notebook  
+## RUN example VariantSpark Jupyter notebook(s)  
 Use the Kubernetes Web Dashboard
 #### 1. LOGIN to Notebook Service
-- Locate the login token for your notebook from the Kubernetes pod log
-- Click the service external endpoint link for the notebook service
-    - Copy token from URL in log
-    - Paste the login token into the Jupyter notebook text box
+- LOCATE the Jupyter notebook login token for your notebook from the Kubernetes pod log
+- CLICK the service external endpoint link for the notebook service
+    - COPY token from URL in log
+    - PASTE the login token into the Jupyter notebook text box
 #### 2. COPY Example Notebooks
  - Go to source - kubernetes -> noteook - upload the notebook using the browser (Jupter) - one level below root (permissions error at top)
  - Update the S3 bucket in the notebook (look in S3 for name - long name with date stamp in the bucket name...)
- #### 3. ADD data to S3
- - Naviage to your S3 bucket that was created during setup
+ #### 3. ADD analysis source data to S3
+ - Navigate to your S3 bucket that was created during setup
  - Upload data files for analysis 
 #### 4. RUN VariantSpark analysis
  - View your example notebook, read notebook and RUN  -or-
@@ -164,5 +164,18 @@ Note: all items must be in your client machine's local PATH
 | aws cli                | 1.15           | Mac, Linux    requires pip          |[link](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)    |
 | terraform              | 0.11.7         | xx                                  | xx     |
 | docker                 | 18.06.0-ce     | Community Edition                   | requires account in DockerHub |
-| kubernetes             | xx             | xx                                  | xx |
+| kubernetes             | 1.10+          | xx                                  | xx |
 | aws-iam-authenticator  | xx             | requires kubectl 1.10+              | [link](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html)|
+
+### AWS Account Resources
+
+| Item      | Edition        | Quantity                            | Link and Notes|
+|-----------|----------------|-------------------------------------|-------------------|
+| EC2       | R4.4xlarge     | 4 - cluster 1 to 8                  | scales via auto-scaler, default allocation is 0   |
+| EKS       | us-west-2      | not available in all regions        | can configure Kubernetes auto-scaler     |
+
+----
+## Troubleshooting
+
+Instance profile error on attempt to creat the cluster.  If you delete an IAM role, there is associated instance metadata that is NOT viewable in the AWS console.  Run `aws iam list-instance-profiles` to view any instance data and, if needed, delete orphaned instance profiles using 
+this command `aws iam delete-instance-profile --instance-profile-name profile_name_here`.
