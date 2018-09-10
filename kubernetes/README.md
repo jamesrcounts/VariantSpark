@@ -112,6 +112,8 @@ Use the Kubernetes Web Dashboard
     b. **Git** - install **git** or **GitHub Desktop**
     - **pull GitHub Repos** `VariantSpark -k` and `VariantSpark`
     - IMPORTANT: pull VS branch for Spark 2.3 on Jim's fork) repos from GitHub 
+    - NOTE: Replace this step with a persistent EBS volume with public access which holds these files:
+    *.yaml and *.ipynb (examples)
 
 2. Client Service Prereqs (IMPORTANT: instructions for Mac/OSX)
 
@@ -153,3 +155,14 @@ Use the Kubernetes Web Dashboard
         `Client Version: version.Info{Major:"1", Minor:"11",...`  
 
 -------
+## Dependency Versions
+
+Note: all items must be in your client machine's local PATH
+
+| Item                   | Tested Version | OS(s)                               | Link and Notes|
+|------------------------|----------------|-------------------------------------|-------------------|
+| aws cli                | 1.15           | Mac, Linux    requires pip          |[link](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)    |
+| terraform              | 0.11.7         | xx                                  | xx     |
+| docker                 | 18.06.0-ce     | Community Edition                   | requires account in DockerHub |
+| kubernetes             | xx             | xx                                  | xx |
+| aws-iam-authenticator  | xx             | requires kubectl 1.10+              | [link](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html)|
