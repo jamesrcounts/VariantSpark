@@ -116,34 +116,50 @@ By default the sample data will installed into the `variant-spark-data\input` su
 
 Note: if you installed the data to a non default location the `VS_DATA_DIR` needs to be set accordingly when running the examples
 
- - Example Job Runs with Parameters (second one runs locally)
+## Setting Parameters
+
+There are two types of parameters, Spark parameters and VariantSpark parameters.  Example job runs with typical parameters are shown below.
+
 ```
 $ variant-spark importance -if ../data/chr22_1000.vcf -ff ../data/chr22-labels.csv -fc 22_16050408 -v -rn 500 -rbs 20 -ro -sr 13
 $ ./variant-spark --local -- importance  -if data/chr22_1000.vcf -ff data/chr22-labels.csv -fc 22_16051249 -v -rn 500 -rbs 20 -ro
 ```
-NOTE: Parameters marked with an asterisk (*) are required, others are optional
+### VariantSpark Parameters
+NOTE: Parameters marked with an asterisk (*) are required, others are optional. Also note, that many parameters include default values.
+
+| Short Param | Param Name     | Info                                         | Long Param & Notes |
+|-------------|----------------|----------------------------------------------|-------------------|
+| -if         | *inputFile     | input variant file path & filename           | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
+| -ff         | *featuresFile  | input feature (label) file path & filename   | --feature-file, formats .csv, .txt, .csv.bz2  |
+| -fc         | *featureColumn | column label name of feature (label) file    | --feature-column  |
+| -it         | inputType      | input file type                              | --input-type, default=vcf, formats vcf, csv, parquet              |
+| -v          | beVerbose      | verbose output                               | --verbose                   |
+| -rn         | nTrees         | number of trees                              | --rf-n-trees, default=20, use 100-500 for testing  |
+| -rbs        | rfBatchSize    | batch size                                   | --rf-batch-size, default=10, use 20-50 for testing    |
+| -rmtf       | rfMTry         | mtry value                                   | --rf-mtry-fractions, use 0.1 for testing   |
+| -ro         | rfEstimateOob  | calculate OOB                                | --rf-oob, default=no & returns NaN   |
+| -sr         | randomSeed     | random seed                                  | --seed, default=random   |
+| -on         | outputVarCount | number of top important variables output     | --output-n-variables, default=20, (if testing set to 1000)   |
+| -of         | outputFile     | path to output files                         | --output-file, default=stdout   |
+| -h          | help           | help messages                                | --help   |
+
+### VariantSpark Commands
+
+| Short Cmd   | Param Name     | Info                                         | Long Param & Notes |
+|-------------|----------------|----------------------------------------------|-------------------|
+| importance  | ImportanceCmd  | runs variableImportance analysis             | importance, NOTE: use the '-- ' Spark param terminator BEFORE importance cmd      |
+
+---
+
+### Spark Parameters with VS commands
 
 | Short Param | Param Name     | Info                                         | Long Param & Notes |
 |-------------|----------------|----------------------------------------------|-------------------|
 | --sp        | sparkPar       | --conf (configuration)                       | --spark-par, (Spark config - size / # of executors)    |
-| --          | *ImportanceCmd | runs variableImportance analysis             | -- importance, '-- ' is a terminator BEFORE importance cmd      |
+| --          | (terminator)   | terminator ends Spark parameters             |'-- ' is a terminator typically run BEFORE VS importance cmd      |
 | --local     | runLocal       | runs locally                                 | --local, - runs job locally |
-| -if         | *inputFile     | input variant file path & filename           | --input-file, formats .vcf, .vcf.bz, .vcf.bz2, parquet  |
-| -ff         | *featuresFile  | input feature (label) file path & filename   | --feature-file, formats .csv, .txt, .csv.bz2  |
-| -fc         | *featureColumn | column label name of feature (label) file    | --feature-column  |
-| -it parquet | inputType      | input file type                              | --input-type                 |
-| -v          | beVerbose      | verbose output                               | --verbose                   |
-| -rn         | *nTrees        | number of trees                              | --rf-n-trees, use 100-500 for testing  |
-| -rbs        | *rfBatchSize   | batch size                                   | --rf-batch-size, use 20-50 for testing    |
-| -rmtf       | rfMTry         | mtry value                                   | --rf-mtry-fractions, use 0.1 for testing   |
-| -ro         | rfEstimateOob  | calculate OOB                                | --rf-oob, disabled by default (returns NaN)   |
-| -sr         | randomSeed     | random seed                                  | --seed, default=(random)   |
-| -on         | outputVarCount | number of top important variables output     | --output-n-variables, default=20, (if testing set to 1000)   |
-| -of         | outputFile     | path to output files                         | --output-file   |
-| -h          | help           | help messages                                | --help   |
 
 ---
-
 		
 #### Parameter Job Run Example
 
