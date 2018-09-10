@@ -6,25 +6,26 @@
 - USE `us-west-2` (Oregon) 
 
 ### 1. CONFIG Terraform Template files
- - UPDATE the `variables.tf` in the `\modules\eks\` folder - change the `worker_size` for your EC2 instance sizes
+ - UPDATE the `variables.tf` in the `\modules\eks\` folder 
+ - CHANGE the `worker_size` value for your EC2 instance sizes
 
 ### 2. INIT/RUN Terraform Templates
-- GO to `/infrastructure/` -> RUN `terraform init` - (first time only)
+- GO to `/infrastructure/`  
+- RUN `terraform init` - (first time only)
 - RUN `terraform plan -var-file config.tfvars -out /tmp/tfplan` 
-- VERIFY no errors after it's run
+    - VERIFY no errors after it's run
 - RUN `terraform apply "/tmp/tfplan"` 
-- WAIT - this can take up to 15 minutes
+    - WAIT - this can take up to 15 minutes
 
 ### 3. CONFIGURE Kubernetes  
  - RUN - First Time Only (from terminal) & VERIFY Cluster
     - `mkdir .kube`
-    - `cd -`
-    - `/Users/lynnlangit/Documents/GitHub/variantspark-k`
     - `cp infrastructure/out/config ~/.kube`  
     - `kubectl cluster-info` - verify a cluster address (URL)
 
 ### 4. ADD nodes, dashboard, RBAC
- - RUN `kubectl apply -f out/setup.yaml` from `/infrastructure/` and wait for 'ready' in state to add the resources to your cluster  
+ - RUN `kubectl apply -f out/setup.yaml` from `/infrastructure/` 
+    - WAIT for 'ready' in state to add the resources to your cluster  
  - RUN `kubectl proxy` 
  - CONNECT using this proxy address:
     -`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
@@ -33,9 +34,10 @@
 
 ### 5. ADD Jupyter notebook service node
 
- - OPEN a NEW terminal from this location in your local VariantSpark 2.3 fork `.../kubernetes -> /Notebook` directory  
+ - OPEN a NEW terminal from a local VS 2.3 fork `.../kubernetes -> /Notebook` directory  
  - RUN `kubectl apply -f notebook.yml` - to create the notebook service
- - VIEW the Kubernetes Web Dashboard, wait for the new pod to turn GREEN
+ - VIEW the Kubernetes Web Dashboard
+    - WAIT for the new Jupyter pod to turn GREEN
  -----
 
 ## RUN the example VariantSpark-k Jupyter notebook  
@@ -80,12 +82,9 @@ Use the Kubernetes Web Dashboard
     - `kubectl delete -f notebook.yml` -> deletes the Jupyter service (& pods)
 - from **variantspark-k** open terminal window
     - stop the Kubernetes web page ('ctrl+c')
-    - run `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` (verify no errors!)
+    - run `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` 
+        - verify no errors
     - run `terraform apply /tmp/tfplan`
-    - verify that this also deleted AWS NLB and AWS VPC
-- manually delete s3 buckets with data (optional)
-    - VS source data
-    - terraform state-storage 
 
 -----
 
@@ -100,7 +99,7 @@ Use the Kubernetes Web Dashboard
   ---  
  
 ----- ONE TIME INSTALLATION STEPS ------------------
-1. General Prereqs - TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources' error message.
+1. General Prereqs 
    
     a. **AWS account & tools** - create / configure
     - AWS Account  (currently using lynnlangit's demo AWS account)
@@ -108,6 +107,7 @@ Use the Kubernetes Web Dashboard
     - AWS cli 
         - run `aws configure` to verify configuration for `--default` profile
         - could use IAM user with use non-default (named) profile  
+        - TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources' error message.
 
     b. **Git** - install **git** or **GitHub Desktop**
     - **pull GitHub Repos** `VariantSpark -k` and `VariantSpark`
