@@ -5,7 +5,7 @@
 //  backend "s3" {
 //    bucket  = "example-bucket"
 //    key     = "variantspark/tfstate"
-//    region  = "us-west-1"
+//    region  = "us-west-2"
 //  }
 //}
 

@@ -1,43 +1,41 @@
 # VariantSpark on AWS EKS (Kubernetes)
 
 
-### 0. SETUP 'one-time only' client steps
+### 0a. SETUP 'one-time only' client steps
 - COMPLETE steps listed at the BOTTOM of this document
-- USE `us-west-2` (Oregon) 
+- USE AWS region `us-west-2` (Oregon) 
 
-### 1. CONFIG Terraform Template files
+### 0b. CONFIG Terraform Template files
  - UPDATE the `variables.tf` in the `\modules\eks\` folder 
  - CHANGE the `worker_size` value for your EC2 instance sizes
+ - RUN `terraform init` from `/infrastructure/`  
 
-### 2. INIT/RUN Terraform Templates
-- GO to `/infrastructure/`  
-- RUN `terraform init` - (first time only)
+### 1a. INIT/RUN Terraform Templates from `/infrastructure/`
 - RUN `terraform plan -var-file config.tfvars -out /tmp/tfplan` 
     - VERIFY no errors after it's run
 - RUN `terraform apply "/tmp/tfplan"` 
     - WAIT - this can take up to 15 minutes
 
-### 3. CONFIGURE Kubernetes  
+### 1b. CONFIGURE Kubernetes  
  - RUN - First Time Only (from terminal) & VERIFY Cluster
     - `mkdir .kube`
     - `cp infrastructure/out/config ~/.kube`  
     - `kubectl cluster-info` - verify a cluster address (URL)
 
-### 4. ADD nodes, dashboard, RBAC
+### 2. ADD Kubernetes nodes, dashboard, RBAC
  - RUN `kubectl apply -f out/setup.yaml` from `/infrastructure/` 
     - WAIT for 'ready' in state to add the resources to your cluster  
  - RUN `kubectl proxy` 
- - CONNECT using this proxy address:
-    -`http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
-    - Leave your terminal window open
-    - Leave the Kubernetes dashboard (web page) open
-
-### 5. ADD Jupyter notebook service node
+ - CONNECT to the Kubernetes web page using this proxy address:  
+    - `http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
+    - Leave your terminal window open & Kubernetes dashboard (web page) open
+   
+### 3. ADD Jupyter notebook service node
 
  - OPEN a NEW terminal from a local VS 2.3 fork `.../kubernetes -> /Notebook` directory  
  - RUN `kubectl apply -f notebook.yml` - to create the notebook service
  - VIEW the Kubernetes Web Dashboard
-    - WAIT for the new Jupyter pod to turn GREEN
+ - WAIT for the new Jupyter pod to turn GREEN
  -----
 
 ## RUN example VariantSpark Jupyter notebook(s)  
@@ -108,6 +106,7 @@ Use the Kubernetes Web Dashboard
         - run `aws configure` to verify configuration for `--default` profile
         - could use IAM user with use non-default (named) profile  
         - TIP: Use `us-west-2` (Oregon),  in `us-east-1` EKS returned an 'out of resources' error message.
+     - AWS STS - must activate for the region you are using (us-west-2) via IAM console ->Account setting -> STS regions
 
     b. **Git** - install **git** or **GitHub Desktop**
     - **pull GitHub Repos** `VariantSpark -k` and `VariantSpark`
