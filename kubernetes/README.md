@@ -5,16 +5,14 @@
 - COMPLETE steps listed at the BOTTOM of this document
 - USE AWS region `us-west-2` (Oregon) 
 
-### 0b. CONFIG Terraform Template files
- - UPDATE the `variables.tf` in the `\modules\eks\` folder 
- - CHANGE the `worker_size` value for your EC2 instance sizes
+### 0b. CONFIG Terraform Template files (currently set to 12 EC2 instances of r4.4xlarge)
+ - SET the `worker_size` value for your EC2 instance sizes at`/Users/lynnlangit/Documents/GitHub/VariantSpark/kubernetes/infrastructure/modules/eks/variables.tf` line 8
+ - SET the `desired_capacity` & `max_size` EC2 count for the quantity of EC2 instances at `kubernetes/infrastructure/modules/eks/autoscaling-group.tf` lines 46/48
  - RUN `terraform init` from `/infrastructure/`  
 
-### 1a. INIT/RUN Terraform Templates from `/infrastructure/`
-- RUN `terraform plan -var-file config.tfvars -out /tmp/tfplan` 
-    - VERIFY no errors after it's run
-- RUN `terraform apply "/tmp/tfplan"` 
-    - WAIT - this can take up to 15 minutes
+### 1a. RUN Terraform Templates from `/infrastructure/`
+- RUN `terraform plan -var-file config.tfvars -out /tmp/tfplan`  & VERIFY no errors after it's run
+- RUN `terraform apply "/tmp/tfplan"` & WAIT - this can take up to 15 minutes
 
 ### 1b. CONFIGURE Kubernetes  
  - RUN - First Time Only (from terminal) & VERIFY Cluster
@@ -23,19 +21,18 @@
     - `kubectl cluster-info` - verify a cluster address (URL)
 
 ### 2. ADD Kubernetes nodes, dashboard, RBAC
- - RUN `kubectl apply -f out/setup.yaml` from `/infrastructure/` 
-    - WAIT for 'ready' in state to add the resources to your cluster  
+ - RUN `kubectl apply -f out/setup.yaml` from `/infrastructure/` & WAIT for 'ready' in state to add the resources to your cluster  
  - RUN `kubectl proxy` 
  - CONNECT to the Kubernetes web page using this proxy address:  
     - `http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/`
     - Leave your terminal window open & Kubernetes dashboard (web page) open
+    - NOTE: AWS-IAM-Authenticator tokens will time-out, if the connection to the Kubernetes dashboard fails, simply refresh the page in your browser.
    
-### 3. ADD Jupyter notebook service node
+### 3. ADD Jupyter notebook service node and pod
 
  - OPEN a NEW terminal from a local VS 2.3 fork `.../kubernetes -> /Notebook` directory  
- - RUN `kubectl apply -f notebook.yml` - to create the notebook service
- - VIEW the Kubernetes Web Dashboard
- - WAIT for the new Jupyter pod to turn GREEN
+ - RUN `kubectl apply -f notebook.yml` - creates the notebook pod
+ - VIEW the Kubernetes Web Dashboard and WAIT for the new Jupyter pod to turn GREEN
  -----
 
 ## RUN example VariantSpark Jupyter notebook(s)  
@@ -46,17 +43,16 @@ Use the Kubernetes Web Dashboard
     - COPY token from URL in log
     - PASTE the login token into the Jupyter notebook text box
 #### 2. COPY Example Notebooks
- - Go to source - kubernetes -> noteook - upload the notebook using the browser (Jupter) - one level below root (permissions error at top)
- - Update the S3 bucket in the notebook (look in S3 for name - long name with date stamp in the bucket name...)
- #### 3. ADD analysis source data to S3
- - Navigate to your S3 bucket that was created during setup
- - Upload data files for analysis 
-#### 4. RUN VariantSpark analysis
+ - Go to source - kubernetes -> Noteook - upload the example notebooks using the browser (Jupter) - at root level 
+#### 3. RUN VariantSpark analysis
  - View your example notebook, read notebook and RUN  -or-
  - Update notebook lines 29 - 46 for customized job run 
  - View kubernetes dashboard - watch pods get created (red -> green)
      - Wait 3-4 minutes for job to complete
  - Verify job completion in notebook
+#### 4. (Optional) ADD your own input data to S3
+ - Upload your own data files for analysis to your S3 bucket
+ - Update the input data source variable to your S3 bucket name in any sample notebook (look in S3 for name - long name with date stamp in the bucket name...)
 
  ***TIPS:*** 
  1. To stop a running job
@@ -85,16 +81,6 @@ Use the Kubernetes Web Dashboard
     - run `terraform apply /tmp/tfplan`
 
 -----
-
-### Other Information and Notes
- - AWS-IAM-Authenticator (was named 'Heptio') tokens time-out, if the connection to the Kubernetes dashboard fails, simply re-fresh the page.
-
- --------
- ### Future Work
- - Parameterize the Terraform templates to be able to specify the cloud provider.  Currently uses AWS only.
- - Add new capability for AWS EKS 2.0 to support the Kubernetes Horizontal Pod Autoscaler.  See this [link](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) for more information.
-
-  ---  
  
 ----- ONE TIME INSTALLATION STEPS ------------------
 1. General Prereqs 
@@ -109,8 +95,7 @@ Use the Kubernetes Web Dashboard
      - AWS STS - must activate for the region you are using (us-west-2) via IAM console ->Account setting -> STS regions
 
     b. **Git** - install **git** or **GitHub Desktop**
-    - **pull GitHub Repos** `VariantSpark -k` and `VariantSpark`
-    - IMPORTANT: pull VS branch for Spark 2.3 on Jim's fork) repos from GitHub 
+    - **pull GitHub Repo** `VariantSpark` - git checkout VariantSpark branch 2.3 on jamesrcounts fork of VariantSpark
     - NOTE: Replace this step with a persistent EBS volume with public access which holds these files:
     *.yaml and *.ipynb (examples)
 
@@ -140,41 +125,103 @@ Use the Kubernetes Web Dashboard
     - **3b. AWS-IAM-Authenticator** - Authentication for IAM, required for AWS EKS, see [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html) to install the AWS-IAM-Authenticator for EKS.   
     
         NOTES: 
-         - get the version for your host OS
-         - do NOT install using Go-Get
-
+        - get the version for your host OS (note: do NOT install using Go-Get as this may install an incorrect version)
         - Download: `https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator`
-
-        - Set Permissions: 
-        - Set path:
-        - Verify install:
-
-    **Important** to verify the version of Kubernetes 1.10+, which is needed to interoperate with another requirement, which is to use Heptio/AWS IAM with EKS.  You should verify the following text after you run `kubectl version` :   
-     
-        `Client Version: version.Info{Major:"1", Minor:"11",...`  
+        - Configure: 'https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html'
+        - Set Permissions, Set path, andVerify install:
 
 -------
 ## Dependency Versions
 
 Note: all items must be in your client machine's local PATH
 
-| Item                   | Tested Version | OS(s)                               | Link and Notes|
-|------------------------|----------------|-------------------------------------|-------------------|
-| aws cli                | 1.15           | Mac, Linux    requires pip          |[link](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)    |
-| terraform              | 0.11.7         | xx                                  | xx     |
-| docker                 | 18.06.0-ce     | Community Edition                   | requires account in DockerHub |
-| kubernetes             | 1.10+          | xx                                  | xx |
-| aws-iam-authenticator  | xx             | requires kubectl 1.10+              | [link](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html)|
+| Item                   | Tested Version | OS(s)                    | Verify                   | Link and Notes     |
+|------------------------|----------------|--------------------------|--------------------------|--------------------|
+| VariantSpark 2.3       | 2.3            | use git                  | checkout branch 2.3      | [link](xxx) - for `*.yml`,`*.yaml` & `*.ipynb` files   |
+| aws cli                | 1.15           | Mac, Linux  requires pip | `aws version`            | [link](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)    |
+| homebrew (package mgr) | xxx            | Mac (optional)           | `homebrew version`       | [link](xxx) - `brew update` & `brew upgrade`   |
+| apt-get (package mgr)  | xxx            | Linux (optional)         | `apt-get`                | [link](xxx) -  update(?)  |
+| terraform              | 0.11.7         | xx                       | `terraform version`      | `brew install terraform`    |
+| docker                 | 18.06.0-ce     | Community Edition        | `docker version`         | requires account in DockerHub |
+| kubernetes             | 1.10+          | xx                       | `kubectl version`        | xx |
+| aws-iam-authenticator  | xx             | requires kubectl 1.10+   | `aws-iam-authenticator`  | [link](https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator)|
 
 ### AWS Account Resources
 
 | Item      | Edition        | Quantity                            | Link and Notes|
 |-----------|----------------|-------------------------------------|-------------------|
-| EC2       | R4.4xlarge     | 4 - cluster 1 to 8                  | scales via auto-scaler, default allocation is 0   |
+| EC2       | R4.4xlarge     | 4 - cluster 1 to 12                 | scales via auto-scaler, default allocation is 0   |
 | EKS       | us-west-2      | not available in all regions        | can configure Kubernetes auto-scaler     |
 
 ----
 ## Troubleshooting
 
-Instance profile error on attempt to creat the cluster.  If you delete an IAM role, there is associated instance metadata that is NOT viewable in the AWS console.  Run `aws iam list-instance-profiles` to view any instance data and, if needed, delete orphaned instance profiles using 
+1. **Create Cluster Error**
+
+    Problem: Not enough resources EC2 instances of this type  
+Solution: Terraform destory/Terraform apply.  Send request to AWS to increase resources
+
+    Problem: Out of EIP addresses, etc... in your AWS Account  
+Solution: Terraform destory/Terraform apply.  Manually delete AWS VPC / EC2 resources tagged with 'variant-spark'
+
+    Problem: Instance profile error on attempt to creat the cluster.  If you delete an IAM role, there is associated instance metadata that is NOT viewable in the AWS console.  
+     Verification: Run `aws iam list-instance-profiles` to view any instance data   
+     Solution: delete orphaned instance profiles using 
 this command `aws iam delete-instance-profile --instance-profile-name profile_name_here`.
+
+    Problem: Not enough EKS resources available.  
+Solution: Terraform destory/Terraform apply. Use AWS regaion `us-west-2`
+
+    Problem: Jupyter notebook pod never turns green - stays red.  
+Solution: Run `kubectl delete -f notebook.yml` and re-run `kubectl apply -f notebook.yml`
+
+2. **Job Runs Slowly Error**  
+
+    Problem: Not enough memory in EKS cluster to load all data into memory for processing  
+Verification: Use Spark Console -> Storage to verify xx% of data in storage (cached), should be 100%    
+Solution: Add more/larger EC2 instances to cluster and configure Spark executor qty and size to use 85% + of available memory
+
+    Problem: One or more Spark Executors runs slowly and/or appears to be 'stuck'  
+Verification: Use Spark Console -> Job Steps / Executors to verify executor state, look for long green bar and/or executor w/0 data  
+Solution: Stop job and re-run
+
+    Problem: Job appears to be complete, but does not return a '0' code (stays in running state)  
+Verification: Review log from Spark driver for this job  
+Solution: Stop job and re-run
+
+3. Job returns non-meaningful results  
+
+    Problem: No value is returned for OOB error  
+    Verification: Spark Driver log returns NaN for oob  
+    Solution: Configure -ro paramter for job, this value turns on oob feature (off by default)
+
+    Problem: xxx  
+    Verification: xxx  
+    Solution: Configure -rn value to set a higher number of trees
+
+    Problem: xxx  
+    Verification: xxx  
+    Solution: Configure -rmtry value to set a higher value for mtry
+
+    Problem: xxx  
+    Verification: xxx  
+    Solution: Configure -rbs value to set a higher value for batch size
+
+    Problem: xxx  
+    Verification: xxx  
+    Solution: Configure xxx value to set a higher value for depth of each tree
+
+    Tip: see VariantSpark paramter documenation for more information at [link](https://github.com/jamesrcounts/VariantSpark/blob/spark2.3/README.md) - see bottom of page.
+
+---------
+
+ ### Future Work
+
+ - Add EKS 2.0 auto-scaler to templates - more at [link](https://aws.amazon.com/blogs/opensource/horizontal-pod-autoscaling-eks/). Supports Kubernetes Horizontal pod auto-scaler.
+ - Parameterize the Terraform templates to be able to specify the cloud provider.  Currently uses AWS only.
+ 
+
+
+
+
+

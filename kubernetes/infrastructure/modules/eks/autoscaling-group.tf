@@ -43,9 +43,9 @@ resource "aws_launch_configuration" "variantspark" {
 }
 
 resource "aws_autoscaling_group" "variantspark" {
-  desired_capacity     = 4
+  desired_capacity     = 12
   launch_configuration = "${aws_launch_configuration.variantspark.id}"
-  max_size             = 8
+  max_size             = 12
   min_size             = 1
   name                 = "variantspark-eks"
   vpc_zone_identifier  = ["${var.public_subnets}"]
