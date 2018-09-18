@@ -139,12 +139,12 @@ Note: all items must be in your client machine's local PATH
 |------------------------|----------------|--------------------------|--------------------------|--------------------|
 | VariantSpark 2.3       | 2.3            | use git                  | checkout branch 2.3      | [link](xxx) - for `*.yml`,`*.yaml` & `*.ipynb` files   |
 | aws cli                | 1.15           | Mac, Linux  requires pip | `aws version`            | [link](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)    |
-| homebrew (package mgr) | xxx            | Mac (optional)           | `homebrew version`       | [link](xxx) - `brew update` & `brew upgrade`   |
-| apt-get (package mgr)  | xxx            | Linux (optional)         | `apt-get`                | [link](xxx) -  update(?)  |
-| terraform              | 0.11.7         | xx                       | `terraform version`      | `brew install terraform`    |
+| homebrew (package mgr) | 1.7.1          | Mac (optional)           | `homebrew version`       | [link](https://devhints.io/homebrew) - `brew update` & `brew upgrade`   |
+| apt-get (package mgr)  |                | Linux (optional)         | `apt-get`                |   |
+| terraform              | 0.11.7         | Mac, Linux               | `terraform version`      | `brew install terraform`    |
 | docker                 | 18.06.0-ce     | Community Edition        | `docker version`         | requires account in DockerHub |
-| kubernetes             | 1.10+          | xx                       | `kubectl version`        | xx |
-| aws-iam-authenticator  | xx             | requires kubectl 1.10+   | `aws-iam-authenticator`  | [link](https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator)|
+| kubernetes             | 1.10+          | Mac, Linux               | `kubectl version`        | [link](https://kubernetes.io/docs/tasks/tools/install-kubectl/) |
+| aws-iam-authenticator  | 1.10.3         | requires kubectl 1.10+   | `aws-iam-authenticator`  | [link](https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator)|
 
 ### AWS Account Resources
 
@@ -216,7 +216,7 @@ Solution: Stop job and re-run
 ---------
 
  ### Future Work
-
+ - Update docker container to use the updated AWS EKS base image - [link](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html)
  - Add EKS 2.0 auto-scaler to templates - more at [link](https://aws.amazon.com/blogs/opensource/horizontal-pod-autoscaling-eks/). Supports Kubernetes Horizontal pod auto-scaler.
  - Parameterize the Terraform templates to be able to specify the cloud provider.  Currently uses AWS only.
  
