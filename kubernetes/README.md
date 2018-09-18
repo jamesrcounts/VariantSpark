@@ -185,11 +185,16 @@ Solution: Add more/larger EC2 instances to cluster and configure Spark executor 
 Verification: Use Spark Console -> Job Steps / Executors to verify executor state, look for long green bar and/or executor w/0 data  
 Solution: Stop job and re-run
 
+    Problem: Job runs slowly  
+    Verification: Use `kubectl` commands to examine cluster operations.  
+    List of common `kubectl` commands [link](https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-context-and-configuration)   
+    Solution: Re-size cluster, kill long-running tasks/pods/node manually, re-start job  
+
     Problem: Job appears to be complete, but does not return a '0' code (stays in running state)  
 Verification: Review log from Spark driver for this job  
 Solution: Stop job and re-run
 
-3. Job returns non-meaningful results  
+3. **Job returns non-meaningful results**  
 
     Problem: No value is returned for OOB error  
     Verification: Spark Driver log returns NaN for oob  
