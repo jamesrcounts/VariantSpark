@@ -1,7 +1,7 @@
 data "aws_ami" "eks-worker" {
   filter {
     name   = "name"
-    values = ["eks-worker-*"]
+    values = ["amazon-eks-node-*"] # previous AWS naming convention was "eks-worker-*"
   }
 
   most_recent = true
