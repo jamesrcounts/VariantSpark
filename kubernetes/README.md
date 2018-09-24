@@ -1,10 +1,11 @@
 # VariantSpark on AWS EKS (Kubernetes)
 
 
+## SETUP your VS-k Cluster - 3 Steps
 ### 0a. SETUP 'one-time only' client steps (at bottom of this page)
 - TIP: Use AWS region `us-west-2` (Oregon) 
 
-### 0b. CONFIG Terraform Template files (at 12 EC2 x r4.4xlarge) 
+### 0b. CONFIG Terraform Template files (at 12 EC2 * r4.4xlarge) 
  - SET the type (size) of EC2 instances via `worker_size` value at`../modules/eks/variables.tf` line 8
  - SET the number of EC2 instances via  `desired_capacity` & `max_size` values at `../modules/eks/autoscaling-group.tf` lines 46/48  
  - RUN `terraform init` (from `...\infrastructure\`)
@@ -31,56 +32,56 @@
  - RUN `kubectl apply -f notebook.yml` - creates the notebook pod
  - VIEW the Kubernetes Web Dashboard & WAIT for the new Jupyter pod to turn GREEN
 
-### 4. KUBERNETES commands - as an alternative viewing the Kubernetes services in the web console, you can use the `kubectl` command(s).  Below is a partial list of commands:
+### 4. (Optional) KUBERNETES commands - as an alternative viewing the Kubernetes services in the web console, you can use the `kubectl` command(s).  Below is a partial list of commands:
     `kubectl cluster-info` - verifies your EKS cluster address (URL)
     `kubectl proxy` - creates a proxy to the Kubernetes web console
     `kubectl apply -f out/<someSetupFile>.yaml` - applies configuration to cluster
  -----
 
-## RUN example VariantSpark Jupyter notebook(s)  
-Using the Kubernetes Web Dashboard...
-#### 1. LOGIN to Notebook Service
-- LOCATE the Jupyter notebook login token for your notebook from the Kubernetes pod log
+## RUN a VS-k Job - 3 Steps
+
+#### 1. LOGIN to Jupyter Notebook Service
+- USE the Kubernetes Web Dashboard
+- COPY the Jupyter notebook login TOKEN from the Kubernetes pod log
 - CLICK the service external endpoint link for the notebook service
-    - COPY token from URL in log
-    - PASTE the login token into the Jupyter notebook text box
+- PASTE the login token into the Jupyter notebook text box
 #### 2. UPLOAD Example Jupyter Notebooks
- - Go to source - kubernetes -> Noteook - upload the example notebooks using the browser (Jupter) - at root level 
+ - GO to `\...\kubernetes\...Noteook` 
+ - UPLOAD the example notebooks (*.ipynb files) using the browser (Jupter) - at root level of the notebook
 #### 3. RUN VariantSpark analysis
- - View your example notebook, read notebook and RUN  -or-
- - Update notebook lines 29 - 46 for customized job run 
- - View kubernetes dashboard - watch pods get created (red -> green)
-     - Wait 3-4 minutes for job to complete
- - Verify job completion in notebook
+ - REVIEW example notebook & RUN  -or-
+ - UPDATE notebook lines 29 - 46 for customized job run 
+ - VIEW kubernetes dashboard - watch pods get created (red -> green)
+     - WAIT 3-4 minutes for job to complete
+ - VERIFY job completion in notebook and in Spark drive pod log
 #### 4. (Optional) ADD your own input data to S3
- - Upload your own data files for analysis to your S3 bucket
- - Update the input data source variable to your S3 bucket name in any sample notebook (look in S3 for name - long name with date stamp in the bucket name...)
+ - UPLOAD your own data files for analysis to your S3 bucket
+ - UPDATE the input data source variable to your S3 bucket name in any sample notebook (look in S3 for name - long name with date stamp in the bucket name...)
 
  ***TIPS:*** 
- 1. STOP a running job
-    - Search for the pod which is the 'driver' on the Kubernetes dashboard
-    - Kill that pod
-    - Wait for all pods in that job to terminate
- 2. CONNECT to the Spark Dashboard
-    - Start a VariantSpark-k job run
-    - Search for the pod which is the 'driver' on the Kubernetes dashboard
-    - Proxy - `kubectl port-forward <driver-pod-name> 4040:4040`
-    and LEAVE that terminal window open
-    - Access the Spark dashboard, while the job is running at `http://localhost:4040`
+ - STOP a running job
+    - SEARCH for the pod which is the 'driver' on the Kubernetes dashboard
+    - DELETE that pod using the Kubernetes dashboard (three dots menu)
+    - WAIT for all pods in that job to terminate
 
-***IMPORTANT:*** At this time, due to security simplification at this phase, you must DOWNLOAD your notebook, BEFORE you terminate your kubernetes cluster 
+  - CONNECT to the Spark Dashboard
+    - START a VariantSpark job run
+    - SEARCH for the pod which is the Spark driver for that job execution on the Kubernetes dashboard
+    - PROXY - `kubectl port-forward <driver-pod-name> 4040:4040`
+    & LEAVE that terminal window open
+    - VIEW the Spark dashboard, while the job is running at `http://localhost:4040`
+
+  - SAVE your work
+    - DOWNLOAD your notebook, BEFORE you terminate your kubernetes cluster 
 
 ----
 
-## DELETE a VS-k Cluster
+## DELETE a VS-k Cluster - 4 Steps
 
-- from the **VariantSpark** open terminal window
-    - `kubectl delete -f notebook.yml` -> deletes the Jupyter service (& pods)
-- from **variantspark** open terminal window
-    - stop the Kubernetes web page ('ctrl+c')
-    - `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` 
-        - verify no errors
-    - `terraform apply /tmp/tfplan` & WAIT for it to complete (up to 15 min)
+1. DELETE the notebook pod - `kubectl delete -f notebook.yml` 
+2. STOP the Kubernetes web page ('ctrl+c')
+3. RUN - `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` & verify no errors
+4. RUN - `terraform apply /tmp/tfplan` & WAIT for it to complete (up to 15 min)
 
 -----
  
@@ -100,9 +101,10 @@ Using the Kubernetes Web Dashboard...
     - **pull GitHub Repo** `VariantSpark` - git checkout VariantSpark branch 2.3 on jamesrcounts fork of VariantSpark
    
 
-2. Client Service Prereqs (IMPORTANT: instructions for Mac/OSX)
+2. Client Service Prereqs 
 
-    The client requires particular versions of Terraform, Docker, Kubernetes and Heptio. Also the client install process varies for Windows, Mac or Linux clients.
+    The client requires particular versions of Terraform, Docker, Kubernetes and the aws-authentication tool. Also the client install process varies for Windows, Mac or Linux clients. 
+
     Note: all items must be in your client machine's local PATH
 
 | Item                   | Tested Version | OS(s)                    | Verify                   | Link and Notes     |
@@ -234,6 +236,8 @@ Solution: Stop job and re-run
 
  ### Future Work
  - Test with the updated AWS EKS base image (v24) - [link](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html)
+ - Provide example EMR or EKS cluster configuration (size, type and quantity of EC2 instances) based on job size
+ - Provide example Spark and VariantSpark parameter configurations based on job size
  - Fix the permissions on the EBS volume with public access which holds these files: *.yaml and *.ipynb (examples) for the Jupyter notebook pod
  - Add EKS 2.0 auto-scaler to templates - more at [link](https://aws.amazon.com/blogs/opensource/horizontal-pod-autoscaling-eks/). Supports Kubernetes Horizontal pod auto-scaler.
  - Parameterize the Terraform templates to be able to specify the cloud provider.  Currently uses AWS only.
