@@ -154,8 +154,8 @@ EMR - 512 instance fleet vs. EKS 8 instances r4.4xlarge
 | Huge 1    | m4.4x or r4.4x | parquet, partitioned  | 5,000 * 100M       | Use AWS - EKS w/ auto-scaler or EMR (spot fleet)              |
 | Huge 2    | m4.4x or r4.4x | parquet, partitioned  | 10,000 * 50M       | Use AWS - EKS w/ auto-scaler or EMR (spot fleet)              |
 
-5. **Spark Parameter settings** - by default Spark uses 1 GB / RAM per executor.  Configure the number of Spark executors xxx and the RAM per executor for bigger jobs using the VariantSpark Spark input parameters.
-6. **VariantSpark Parameters settings** - VariantSpark includes a large number of configurable parameters, for more information, go here - link
+5. **Spark Parameter settings** - by default Spark uses 1 GB / RAM per executor.  Configure the number of Spark executors xxx and the RAM per executor for bigger jobs using the VariantSpark Spark input parameters.  These include number and size of Spark executors, also other settings including 'dynamic executor' setting.  
+6. **VariantSpark Parameters settings** - VariantSpark includes a large number of configurable parameters, for more information, go here - link. Also number of partitions (this is a parameter -sp or -ps)  should be 2-3x # of CPUs
 ----
 ## Troubleshooting
 
@@ -200,6 +200,11 @@ Solution: Stop job and re-run
     Problem: Job appears to be complete, but does not return a '0' code (stays in running state)  
 Verification: Review log from Spark driver for this job  
 Solution: Stop job and re-run
+
+    Problem: Job runs slowly
+    Verification: Verify Spark paritioning, verify that your data is evenly distributed
+    Other Information: Apache Spark can only run a single concurrent task for every partition of an RDD, up to the number of cores in your cluster (and probably 2-3x times that). Hence as far as choosing a "good" number of partitions, you generally want at least as many as the number of executors for parallelism. You can get this computed value by calling sc.defaultParallelism. The maximum size of a partition is ultimately limited by the available memory of an executor.
+    Solution: Manually configure Spark partitions for your job
 
 3. **Job returns non-meaningful results**  
 

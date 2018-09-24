@@ -153,11 +153,12 @@ NOTE: Parameters marked with an asterisk (*) are required, others are optional. 
 
 ### Spark Parameters with VS commands
 
-| Short Param | Param Name     | Info                                         | Long Param & Notes |
-|-------------|----------------|----------------------------------------------|-------------------|
-| --sp        | sparkPar       | --conf (configuration)                       | --spark-par, (Spark config - size / # of executors)    |
-| --          | (terminator)   | terminator ends Spark parameters             |'-- ' is a terminator typically run BEFORE VS importance cmd      |
-| --local     | runLocal       | runs locally                                 | --local, - runs job locally |
+| Short Param | Param Name  | Info                          | Long Param & Notes |
+|-------------|-------------|-------------------------------|-------------------|
+| --sp        | sparkPar    | --conf (configuration)        | --spark-par, (Spark parallelism, number of partitions)   |
+| --sp        | sparkPar    | number of Spark partitions    | set to Spark default partitions (total number of cores on all the executor nodes)   |
+| --          | (terminator)| ends Spark parameters         |'-- ' is a terminator typically run BEFORE VS importance cmd      |
+| --local     | runLocal    | runs locally                  | --local, - runs job locally |
 
 ---
 		
