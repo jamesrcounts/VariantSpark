@@ -16,7 +16,7 @@
 
 ### 1b. COPY Generated EKS Config File 
  - Do once AFTER the first (initial) run of Terraform 
-    - `mkdir .kube`
+    - `mkdir ~/.kube`
     - `cp infrastructure/out/config ~/.kube`  
 
 ### 2. ADD Kubernetes nodes, dashboard, RBAC from `/infrastructure/`
@@ -79,7 +79,7 @@
 ## DELETE a VS-k Cluster - 4 Steps
 
 1. DELETE the notebook pod - `kubectl delete -f notebook.yml` 
-2. STOP the Kubernetes web page ('ctrl+c')
+2. STOP the Kubernetes web page ('ctrl+c') - in the terminal window
 3. RUN - `terraform plan -var-file config.tfvars -destroy -out /tmp/tfplan` & verify no errors
 4. RUN - `terraform apply /tmp/tfplan` & WAIT for it to complete (up to 15 min)
 
