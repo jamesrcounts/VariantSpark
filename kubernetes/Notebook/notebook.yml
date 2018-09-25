@@ -12,23 +12,6 @@ spec:
     requests:
       storage: 1Gi
 ---
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: notebook-storage
-  annotations:
-      pv.beta.kubernetes.io/gid: "100"
-  labels:
-    type: local
-spec:
-  storageClassName: gp2
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data"
----
 kind: Pod
 apiVersion: v1
 metadata:
@@ -38,7 +21,7 @@ metadata:
 spec:
   serviceAccountName: spark
   securityContext:
-    fsGroup: 100
+    fsGroup: 100 
   volumes:
     - name: notebook-storage
       persistentVolumeClaim:
