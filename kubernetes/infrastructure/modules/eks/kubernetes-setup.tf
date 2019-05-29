@@ -18,21 +18,16 @@ data:
       groups:
         - system:masters
 ---
-apiVersion: storage.k8s.io/v1
 kind: StorageClass
+apiVersion: storage.k8s.io/v1
 metadata:
-  annotations:
-     storageclass.kubernetes.io/is-default-class: "true"
-  creationTimestamp: null
   name: gp2
-  selfLink: /apis/storage.k8s.io/v1/storageclasses/gp2
-mountOptions:
-- debug
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/aws-ebs
 parameters:
   type: gp2
-provisioner: kubernetes.io/aws-ebs
-reclaimPolicy: Retain
-volumeBindingMode: Immediate
+  fsType: ext4
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
